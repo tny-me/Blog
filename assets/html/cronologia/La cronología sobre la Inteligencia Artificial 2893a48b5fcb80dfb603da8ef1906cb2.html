@@ -1,0 +1,713 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>La cronología sobre la Inteligencia Artificial</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(134, 131, 126, 1);
+	fill: rgba(134, 131, 126, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(134, 131, 126, 1);
+	fill: rgba(134, 131, 126, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2893a48b-5fcb-80df-b603-da8ef1906cb2" class="page sans"><header><h1 class="page-title">La cronología sobre la Inteligencia Artificial</h1><p class="page-description"></p></header><div class="page-body"><p id="2893a48b-5fcb-80e1-aa96-eb0262d5dab6" class=""><strong>Autor</strong>: Antonio Moreno</p><p id="2893a48b-5fcb-8066-98a2-c01ad724107d" class=""><strong>Fecha:</strong> Octubre 2022</p><hr id="2893a48b-5fcb-80b1-b858-de5973d7eb07"/><blockquote id="2893a48b-5fcb-80d6-a11a-ca1add2ab899" class="">A pesar de su breve historia, las computadoras y la IA han transformado fundamentalmente lo que vemos, sabemos y hacemos. Pocas cosas son tan importantes para el futuro del mundo y de nuestras propias vidas como la continuidad de esta historia. Para prever cómo podría ser el futuro, suele ser útil estudiar nuestra historia. Esto es lo que haré en este artículo. Repaso la breve historia de las computadoras y la inteligencia artificial para ver qué podemos esperar del futuro.</blockquote><p id="2893a48b-5fcb-8056-acc0-eaf159c5b9ee" class="">
+</p><p id="2893a48b-5fcb-8064-a4f1-f0ab907ae850" class=""><strong>Palabras clave:</strong> [inteligencia artificial]</p><hr id="2893a48b-5fcb-8078-8830-d2014eeda63e"/><h3 id="2893a48b-5fcb-8012-99ad-ce1fd4b10a79" class="">¿Cómo llegamos aquí?</h3><p id="2893a48b-5fcb-80f7-8e7c-de9d1b79b653" class="">La rapidez con la que ha cambiado el mundo se hace evidente en lo anticuada que parece hoy incluso la tecnología informática más reciente. Los teléfonos móviles de los años 90 eran enormes ladrillos con diminutas pantallas verdes. Dos décadas antes, el principal sistema de almacenamiento de las computadoras eran las tarjetas perforadas. En poco tiempo, las computadoras evolucionaron tan rápidamente y se convirtieron en parte integral de nuestra vida diaria que es fácil olvidar lo reciente que es esta tecnología. Las primeras computadoras digitales se inventaron hace apenas ocho décadas, como muestra la cronología.</p><p id="2893a48b-5fcb-802d-83a1-e6d626d8937d" class="">
+</p><figure id="2893a48b-5fcb-8038-8059-f4e1a88ceefa" class="image"><a href="Computer-timeline.png"><img style="width:1330.7625732421875px" src="Computer-timeline.png"/></a></figure><p id="2893a48b-5fcb-8026-8daf-c9e1927656f9" class="">Desde los inicios de esta historia, algunos científicos informáticos se han esforzado por crear máquinas tan inteligentes como los humanos. La siguiente cronología muestra algunos de los sistemas de inteligencia artificial (IA) más destacados y describe sus capacidades.</p><p id="2893a48b-5fcb-805d-baef-e48e86038faf" class="">El primer sistema que menciono es el Teseo. Fue construido por Claude Shannon en 1950 y consistía en un ratón a control remoto capaz de salir de un laberinto y recordar su recorrido. En siete décadas, las capacidades de la inteligencia artificial han avanzado mucho.</p><p id="2893a48b-5fcb-8087-9da2-fdff9605a8fe" class="">
+</p><figure id="2893a48b-5fcb-80c6-b54d-f1a2a0faef41" class="image"><a href="ai-timeline_(1).png"><img style="width:1104px" src="ai-timeline_(1).png"/></a></figure><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="2893a48b-5fcb-804b-9e04-c86e50183af0"><div style="font-size:1.5em"><span class="icon">➡️</span></div><div style="width:100%"><ol type="1" id="2893a48b-5fcb-8045-950c-f25d42cc96b3" class="numbered-list" start="1"><li><strong>En la Década de 1940<br/></strong>El nacimiento de las computadoras digitales sentó las bases para el desarrollo de la inteligencia artificial.</li></ol><ol type="1" id="2893a48b-5fcb-80cb-9f13-e4fec1077d81" class="numbered-list" start="2"><li><strong>Theseus (1950):<br/></strong>Un pequeño ratón robótico capaz de navegar en un laberinto simple y recordar su recorrido.</li></ol><ol type="1" id="2893a48b-5fcb-80a0-bd14-d9002aa6bc35" class="numbered-list" start="3"><li><strong>Perceptron Mark I (1958):<br/></strong>Considerado como la primera red neuronal artificial, podía distinguir visualmente tarjetas marcadas en el lado izquierdo de aquellas marcadas en el derecho.</li></ol><ol type="1" id="2893a48b-5fcb-805e-9b5a-fca2519a2e5d" class="numbered-list" start="4"><li><strong>TD-Gammon (1992):<br/></strong>Software que aprendió a jugar backgammon a un nivel alto, casi al nivel de los mejores jugadores humanos.</li></ol><ol type="1" id="2893a48b-5fcb-8044-bda8-c063b351a54b" class="numbered-list" start="5"><li><strong>AlexNet (2012):<br/></strong>Un sistema de deep learning pionero —una red neuronal profunda con múltiples capas— que podía reconocer imágenes de objetos como perros y automóviles con una precisión casi humana.</li></ol><ol type="1" id="2893a48b-5fcb-8087-acb0-e92df757be16" class="numbered-list" start="6"><li><strong>IA moderna (2020–2050):<br/></strong>Desarrollo de inteligencias artificiales con capacidades de lenguaje e imagen comparables a las humanas.<h3 id="2893a48b-5fcb-80a8-a12e-d8d7346d234c" class="">Resumen</h3></li></ol></div></figure><p id="2893a48b-5fcb-808d-a171-ebce275964ef" class="">
+</p><div id="2893a48b-5fcb-8022-8006-cb7078aba9d0" class="column-list"><div id="2893a48b-5fcb-801b-ac57-d71eac5a43aa" style="width:50%" class="column"><h3 id="2893a48b-5fcb-80d1-a139-c44e475ca320" class=""><strong>Las capacidades de reconocimiento de lenguaje e imágenes de los sistemas de IA se han desarrollado muy rápidamente</strong></h3><p id="2893a48b-5fcb-8091-89b7-db36b8d71be5" class="">El gráfico muestra cómo llegamos hasta aquí analizando las últimas dos décadas del desarrollo de la IA. Los datos representados provienen de diversas pruebas en las que se evaluó el rendimiento de humanos y de la IA en diferentes ámbitos, desde el reconocimiento de escritura a mano hasta la comprensión del lenguaje.</p><p id="2893a48b-5fcb-80b3-972d-c59524699dbe" class="">Dentro de cada dominio, el rendimiento inicial del sistema de IA se establece en -100, y el rendimiento humano en estas pruebas se utiliza como referencia, establecido en cero. Esto significa que cuando el rendimiento del modelo supera el cero, el sistema de IA obtuvo más puntos en la prueba correspondiente que los humanos que la realizaron.</p><p id="2893a48b-5fcb-802c-9c53-fde10bc333c5" class="">Hace tan solo 10 años, ninguna máquina podía proporcionar reconocimiento de lenguaje o imágenes de forma fiable a nivel humano. Sin embargo, como muestra el gráfico, los sistemas de IA han adquirido cada vez más capacidad y ahora superan a los humanos en <em>pruebas</em> en todos estos ámbitos.</p><p id="2893a48b-5fcb-80f1-8680-d5b1444b34ae" class="">Fuera de estas pruebas estandarizadas, el rendimiento de estas IA es desigual. En algunos casos reales, estos sistemas aún tienen un rendimiento mucho menor que el de los humanos. Por otro lado, algunas implementaciones de estos sistemas de IA ya son tan económicas que están disponibles en el teléfono: el reconocimiento de imágenes categoriza tus fotos y el reconocimiento de voz transcribe lo que dictas.</p><p id="2893a48b-5fcb-806d-b8a1-c2c5ed087214" class="">
+</p><h3 id="2893a48b-5fcb-80df-a68e-c08d980799cd" class=""><strong>Del reconocimiento de imágenes a la generación de imágenes</strong></h3><p id="2893a48b-5fcb-80e1-ad4a-ca6a36891f09" class="">El gráfico anterior mostró los rápidos avances en las capacidades perceptivas de la inteligencia artificial. Los sistemas de IA también han adquirido una capacidad mucho mayor para generar imágenes.</p><p id="2893a48b-5fcb-8085-a309-f4b2a37ae819" class="">Esta serie de nueve imágenes muestra el desarrollo de los últimos nueve años. Ninguna de las personas que aparecen en estas imágenes existe; todas fueron generadas por un sistema de inteligencia artificial.</p><p id="2893a48b-5fcb-80b3-8292-ffa5c1b0ffcb" class="">La serie comienza con una imagen de 2014 en la esquina superior izquierda: una imagen primitiva de un rostro pixelado en blanco y negro. Como muestra la primera imagen de la segunda fila, tan solo tres años después, los sistemas de IA ya eran capaces de generar imágenes difíciles de diferenciar de las fotografías.</p><p id="2893a48b-5fcb-80ca-a46a-ec83b9235d9c" class="">En los últimos años, la capacidad de los sistemas de IA se ha vuelto aún más impresionante. Mientras que los primeros sistemas se centraban en generar imágenes de rostros, estos modelos más nuevos ampliaron sus capacidades a la generación de texto a imagen basándose en prácticamente cualquier indicación. La imagen de la esquina inferior derecha muestra que incluso las indicaciones más complejas, como. <em>Un pomerania está sentado en el trono del rey con una corona. Dos soldados tigre están de pie junto al trono</em>, se convierten en imágenes fotorrealistas en cuestión de segundos.</p><p id="2893a48b-5fcb-80d4-a8fb-ea8446116159" class="">
+</p><hr id="2893a48b-5fcb-804d-80fb-d844ee1871f3"/><h3 id="2893a48b-5fcb-8046-8497-fa5c46133206" class=""><strong>El reconocimiento y la producción del lenguaje se están desarrollando rápidamente</strong></h3><p id="2893a48b-5fcb-80ab-8295-f34499346fef" class="">Tan sorprendente como los avances de las IA generadoras de imágenes es el rápido desarrollo de sistemas que analizan y responden al lenguaje humano.</p><p id="2893a48b-5fcb-80e5-a7df-c785c8007ab5" class="">La imagen muestra ejemplos de un sistema de IA desarrollado por Google llamado PaLM. En estos seis ejemplos, se le pidió al sistema que explicara seis chistes diferentes. Me parece particularmente destacable la explicación en la esquina inferior derecha: la IA explica un chiste anti-chiste diseñado específicamente para confundir al oyente.</p><p id="2893a48b-5fcb-8082-98ff-fdb63189c0cb" class="">Las IA que producen lenguaje han entrado en nuestro mundo de muchas maneras en los últimos años. Los correos electrónicos se autocompletan, se traducen cantidades masivas de textos en línea, los videos se transcriben automáticamente, los estudiantes usan modelos lingüísticos para hacer sus tareas, los informes se autogeneran y los medios de comunicación <a href="https://en.wikipedia.org/wiki/Automated_journalism">publican</a> periodismo generado por IA.</p><p id="2893a48b-5fcb-8047-bce2-c9409b9efa15" class="">Los sistemas de IA aún no son capaces de producir textos largos y coherentes. En el futuro, veremos si los avances recientes se ralentizarán, o incluso terminarán, o si algún día leeremos una novela superventas escrita por una IA.</p></div><div id="2893a48b-5fcb-80cd-a8d1-e3a4b054a4a1" style="width:50%" class="column"><figure id="2893a48b-5fcb-80ef-a7b8-dd9cbfd2cb3d" class="image"><a href="image.png"><img style="width:641.375px" src="image.png"/></a></figure><figure id="2893a48b-5fcb-806f-a85d-e2b14f186ef6" class="image"><a href="w1350.avif"><img style="width:576px" src="w1350.avif"/></a></figure><figure id="2893a48b-5fcb-806b-a144-e54fffa5eba3" class="image"><a href="image%201.png"><img style="width:641.375px" src="image%201.png"/></a><figcaption><strong>Salida del sistema de IA PaLM después de que se le pidiera interpretar seis chistes diferentes.</strong></figcaption></figure></div></div><hr id="2893a48b-5fcb-8010-9c8b-f2cfce68ef6f"/><h3 id="2893a48b-5fcb-80d5-b004-ffadfec4e6c2" class=""><strong>Dónde estamos ahora: la IA ya está aquí</strong></h3><p id="2893a48b-5fcb-8057-b486-c4d8871a3a0a" class="">Estos rápidos avances en las capacidades de la IA han hecho posible el uso de máquinas en una amplia gama de nuevos dominios:</p><p id="2893a48b-5fcb-805b-9b42-dec4468a369b" class="">Al reservar un vuelo, suele ser una inteligencia artificial, y no un ser humano, quien <a href="https://www.bloomberg.com/news/articles/2022-10-20/artificial-intelligence-helps-airlines-find-the-right-prices-for-flight-tickets">decide</a> cuánto pagas. Al llegar al aeropuerto, un sistema de IA <a href="https://www.sourcesecurity.com/news/co-2166-ga.132.html">monitorea</a> lo que haces allí. Y una vez en el avión, un sistema de IA ayuda al piloto a <a href="https://www.airbus.com/en/innovation/industry-4-0/artificial-intelligence">llevarte</a> a tu destino.</p><p id="2893a48b-5fcb-8003-9761-dda768c2f729" class="">Los sistemas de IA también determinan cada vez más si se <a href="https://www.brookings.edu/research/reducing-bias-in-ai-based-financial-services/">obtiene un préstamo</a> , se <a href="https://theconversation.com/ai-algorithms-intended-to-root-out-welfare-fraud-often-end-up-punishing-the-poor-instead-131625">cumple con los requisitos</a> para recibir asistencia social o se consigue <a href="https://www.reuters.com/article/us-amazon-com-jobs-automation-insight-idUSKCN1MK08G">un</a> empleo específico. Cada vez más, ayudan a determinar quién <a href="https://www.technologyreview.com/2019/01/21/137783/algorithms-criminal-justice-ai/">sale de la cárcel</a> .</p><p id="2893a48b-5fcb-80a5-8743-ef2162a5cbbb" class="">Varios gobiernos han comprado <a href="https://en.wikipedia.org/wiki/Lethal_autonomous_weapon">sistemas de armas autónomas</a> para la guerra, y algunos utilizan sistemas de IA para <a href="https://www.nytimes.com/2019/04/14/technology/china-surveillance-artificial-intelligence-racial-profiling.html">vigilancia y opresión</a> .</p><p id="2893a48b-5fcb-8008-bb74-d795759277f3" class="">Los sistemas de IA <a href="https://en.wikipedia.org/wiki/GitHub_Copilot">ayudan</a> a programar el software que utilizas y <a href="https://en.wikipedia.org/wiki/Machine_translation">a traducir</a> los textos que lees. <a href="https://en.wikipedia.org/wiki/Virtual_assistant">Los asistentes virtuales</a> , operados por reconocimiento de voz, han llegado a muchos hogares en la última década. Ahora, <a href="https://en.wikipedia.org/wiki/Self-driving_car">los coches autónomos</a> se están convirtiendo en una realidad.</p><p id="2893a48b-5fcb-8026-843d-f1db8588f882" class="">En los últimos años, los sistemas de IA han <a href="https://www.nature.com/articles/s42254-022-00518-3">ayudado a avanzar</a> en algunos de los problemas más difíciles de la ciencia.</p><p id="2893a48b-5fcb-805b-8409-ee839dc57a6e" class="">Las grandes IA, llamadas <a href="https://en.wikipedia.org/wiki/Recommender_system">sistemas de recomendación,</a> determinan lo que vemos en redes sociales, qué productos se muestran en tiendas online y qué se recomienda en YouTube. Cada vez más, no solo recomiendan los medios que consumimos, sino que, basándose en su capacidad para generar imágenes y textos, también los <a href="https://www.nature.com/articles/d41586-021-00530-0">crean</a> .</p><p id="2893a48b-5fcb-80b6-9cb3-e3c17105caaa" class="">La inteligencia artificial ya no es una tecnología del futuro; la IA ya está aquí, y gran parte de la realidad actual habría parecido ciencia ficción hace poco. Es una tecnología que ya nos impacta a todos, y la lista anterior incluye solo algunas de sus <a href="https://en.wikipedia.org/wiki/Applications_of_artificial_intelligence">numerosas aplicaciones</a> .</p><p id="2893a48b-5fcb-8015-88f3-f97c1bbce943" class="">La amplia gama de aplicaciones enumeradas deja claro que se trata de una tecnología muy general que puede ser utilizada por las personas para algunos fines muy beneficiosos, y también para otros extremadamente perjudiciales. Para estas tecnologías de doble uso, es importante que todos comprendamos qué está sucediendo y cómo queremos que se utilicen.</p><p id="2893a48b-5fcb-80ac-8899-dc518ca55bf4" class="">Hace apenas dos décadas, el mundo era muy diferente. ¿De qué podría ser capaz la tecnología de IA en el futuro?</p><hr id="2893a48b-5fcb-8010-b106-f342f724595f"/><h3 id="2893a48b-5fcb-800f-8d8a-f9543a08f969" class=""><strong>¿Qué sigue?</strong></h3><p id="2893a48b-5fcb-8015-8102-ddd030fe986e" class="">Los sistemas de IA que acabamos de considerar son el resultado de décadas de avances constantes en la tecnología de IA.</p><p id="2893a48b-5fcb-8044-ab89-cce2cbb666f1" class="">Cada círculo pequeño de este gráfico representa un sistema de IA. La posición del círculo en el eje horizontal indica cuándo se creó el sistema, y su posición en el eje vertical muestra la cantidad de computación utilizada para entrenarlo.</p><p id="2893a48b-5fcb-8037-86d0-cd3e121cc58d" class="">El cálculo de entrenamiento se mide en <em>operaciones de punto flotante</em> (FLOP). Un FLOP equivale a una suma, resta, multiplicación o división de dos números decimales.</p><p id="2893a48b-5fcb-807d-849b-ff32da63b9c5" class="">Todos los sistemas de IA que se basan en el aprendizaje automático necesitan entrenamiento, y en estos sistemas, <em>el cómputo de entrenamiento es uno de los tres factores fundamentales que impulsan sus capacidades.</em> Los otros dos factores son los algoritmos y los datos de entrada utilizados para el entrenamiento. La visualización muestra que, a medida que el cómputo de entrenamiento ha aumentado, los sistemas de IA se han vuelto cada vez más potentes.</p><p id="2893a48b-5fcb-8043-a6d7-c51519dc6169" class="">La cronología se remonta a la década de 1940, cuando se inventaron las computadoras electrónicas. El primer sistema de IA mostrado es «Theseus», el ratón robótico de Claude Shannon de 1950 que mencioné al principio. Hacia el otro extremo de la cronología, se encuentran sistemas de IA como DALL-E y PaLM; acabamos de hablar de su capacidad para producir imágenes fotorrealistas e interpretar y generar lenguaje. Se encuentran entre los sistemas de IA que han utilizado la mayor cantidad de computación de entrenamiento hasta la fecha.</p><p id="2893a48b-5fcb-807d-91cb-d79f27efaaea" class="">El cálculo de entrenamiento se representa en una escala logarítmica, de modo que, de cada línea de la cuadrícula a la siguiente, muestra un aumento de 100 veces. Esta perspectiva a largo plazo muestra un aumento continuo. Durante las primeras seis décadas, el cálculo de entrenamiento aumentó según la Ley de Moore , duplicándose aproximadamente cada 20 meses. Desde aproximadamente 2010, este crecimiento exponencial se ha acelerado aún más, hasta alcanzar un tiempo de duplicación de tan solo seis meses. Se trata de una tasa de crecimiento asombrosamente rápida. </p><p id="2893a48b-5fcb-808f-9b73-dbaae24faea4" class="">Los rápidos tiempos de duplicación han dado lugar a grandes aumentos. El cálculo de entrenamiento de PaLM fue de 2.500 millones de petaFLOP, más de 5 millones de veces mayor que el de AlexNet, la IA con el mayor cálculo de entrenamiento tan solo 10 años antes <a href="https://ourworldindata.org/brief-history-of-ai#note-10">.</a></p><p id="2893a48b-5fcb-8031-b94d-c23720f6860b" class="">La expansión ya era exponencial y se ha acelerado considerablemente en la última década. ¿Qué podemos aprender de este desarrollo histórico para el futuro de la IA?</p><hr id="2893a48b-5fcb-80e5-a1b8-d21f900ab30d"/><h3 id="2893a48b-5fcb-8030-af43-cf68d0167622" class=""><strong>Estudiar las tendencias a largo plazo para predecir el futuro de la IA</strong></h3><p id="2893a48b-5fcb-80c5-8baa-e9255cb2c540" class="">Los investigadores de IA estudian estas tendencias a largo plazo para ver qué es posible en el futuro.</p><p id="2893a48b-5fcb-8013-afcf-fb4bb05cb9c4" class="">Quizás el estudio más ampliamente debatido de este tipo fue publicado por la investigadora de IA Ajeya Cotra. <em>Estudió el aumento de la computación de entrenamiento para preguntarse en qué punto la computación para entrenar un sistema de IA podría igualar la del cerebro humano</em>. La idea es que, en este punto, el sistema de IA igualaría las capacidades de un cerebro humano. En su última actualización, Cotra estimó una probabilidad del 50% de que dicha &quot;IA transformadora&quot; se desarrolle para el año 2040, dentro de menos de dos décadas.</p><p id="2893a48b-5fcb-8041-8b08-e9f66c854c19" class="">
+</p><p id="2893a48b-5fcb-8009-99e7-c2dd3d6e134b" class="">En resumen, la idea es que un sistema de IA de este tipo sería lo suficientemente potente como para llevar al mundo a un futuro cualitativamente diferente. Podría conducir a un cambio a la escala de las dos grandes transformaciones anteriores en la historia de la humanidad: la revolución agrícola y la industrial. Sin duda, representaría el cambio global más importante de nuestra vida.</p><p id="2893a48b-5fcb-8021-964a-d83f95b404f3" class="">Cabe destacar que otros pronosticadores, basándose en consideraciones diferentes, llegan a conclusiones similares. Muchos expertos en IA creen que existe una posibilidad real de que se desarrolle una inteligencia artificial de nivel humano en las próximas décadas, y algunos creen que existirá mucho antes.</p><hr id="2893a48b-5fcb-805a-a1c6-cbad2422805e"/><h3 id="2893a48b-5fcb-8071-9b00-dbee4970f584" class=""><strong>Construir un recurso público para posibilitar la conversación pública necesaria</strong></h3><p id="2893a48b-5fcb-80a4-bdce-c130f27eb549" class="">Las computadoras y la inteligencia artificial han transformado nuestro mundo enormemente, pero aún nos encontramos en las primeras etapas de esta historia. Debido a que esta tecnología nos resulta tan familiar, es fácil olvidar que todas las tecnologías con las que interactuamos son innovaciones muy recientes y que los cambios más profundos aún están por venir.</p><p id="2893a48b-5fcb-80fe-92ff-f27f20d208f0" class="">La inteligencia artificial ya ha transformado lo que vemos, lo que sabemos y lo que hacemos. Esto a pesar de su breve historia.</p><p id="2893a48b-5fcb-808a-8637-da3bc529c523" class="">No hay indicios de que estas tendencias vayan a alcanzar límites en el futuro próximo. Al contrario, especialmente en la última década, las tendencias fundamentales se han acelerado: las inversiones en tecnología de IA han aumentado rápidamente y el tiempo de duplicación del cómputo de entrenamiento se ha reducido a tan solo seis meses.</p><p id="2893a48b-5fcb-8091-91d7-d7af6921d5d9" class="">Toda gran innovación tecnológica conlleva diversas consecuencias, tanto positivas como negativas. Esto ya es cierto en el caso de la inteligencia artificial. A medida que esta tecnología se vuelve cada vez más potente, cabe esperar que su impacto siga aumentando.</p><p id="2893a48b-5fcb-8095-a205-efe1612bdd69" class="">Dada la importancia de la IA, todos deberíamos poder formarnos una opinión sobre el futuro de esta tecnología y comprender cómo este desarrollo está transformando nuestro mundo. </p><p id="2893a48b-5fcb-80df-ba56-ffe08eb971a1" class="">Aún estamos en las primeras etapas de esta historia, y mucho de lo que será posible aún está por venir. Un desarrollo tecnológico tan poderoso como este debería ser el centro de nuestra atención. Pocas cosas podrían ser tan importantes para el futuro de nuestro mundo —y el futuro de nuestras vidas—.</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>
