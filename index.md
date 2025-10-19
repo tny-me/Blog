@@ -31,7 +31,7 @@ title: Inicio
 <!-- FOTO A LA IZQUIERDA -->
 <div class="hero">
   <div>
-    <img class="photo" src="{{ '/assets/img/fotoperfil.png' | relative_url }}" alt="{{ site.author.name }}">
+    <img class="photo" src="{{ '/assets/img/ia/fotoperfil.png' | relative_url }}" alt="{{ site.author.name }}">
   </div>
   <div>
     <h1>{{ site.author.name }}</h1>
