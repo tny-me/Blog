@@ -1,14 +1,6 @@
-title: "Blog de Antonio"
-description: "Datos, tecnología y progreso."
-url: "https://tny-me.github.io"  # tu usuario
-baseurl: "/Blog"                  # nombre del repo con mayúscula si así está
-
-# Tema oficial (no necesitas workflows ni Gemfile)
-theme: jekyll-theme-cayman
-
-# Navegación simple (opcional)
-nav:
-  - name: "Inicio"
-    url: "/"
-  - name: "Acerca"
-    url: "/about/"
+author:
+  name: "Antonio Moreno"
+  role: "Ingeniero de investigación en IA"
+  bio: "Exploro IA práctica, LLMs y ciencia de datos aplicada."
+  photo: "/assets/img/author.jpg"   # <-- SIN /Blog
+  email: "anthoniomoreno1@gmail.com"
