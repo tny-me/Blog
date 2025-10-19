@@ -2,6 +2,7 @@
 layout: default
 title: Inicio
 ---
+<p style="font-size:12px;color:#888">debug: {{ site.author.photo | relative_url }}</p>
 
 <style>
 .hero{max-width:980px;margin:0 auto 32px;display:grid;grid-template-columns:220px 1fr;gap:24px;align-items:start}
