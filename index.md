@@ -28,9 +28,10 @@ title: Inicio
 }
 </style>
 
-<!-- FOTO A LA IZQUIERDA -->
+<!-- HERO: FOTO + BIO -->
 <div class="hero">
   <div>
+    <!-- FOTO PERFIL RUTA FIJA -->
     <img class="photo" src="{{ '/assets/img/ia/fotoperfil.png' | relative_url }}" alt="{{ site.author.name }}">
   </div>
   <div>
@@ -40,13 +41,11 @@ title: Inicio
     <p class="links">
       <a href="{{ site.baseurl }}/feed.xml">Feed RSS</a>
       <a href="mailto:{{ site.author.email }}">Contacto</a>
-      {% if site.author.linkedin %}<a href="{{ site.author.linkedin }}">LinkedIn</a>{% endif %}
-      {% if site.author.twitter %}<a href="{{ site.author.twitter }}">Twitter</a>{% endif %}
-      {% if site.author.newsletter %}<a href="{{ site.author.newsletter }}">Suscríbete</a>{% endif %}
     </p>
   </div>
 </div>
 
+<!-- LISTA DE POSTS -->
 <h2 class="section-title">Notas y entradas de blog recientes</h2>
 <p class="section-sub">Ver <a href="{{ site.baseurl }}/archive/">Archivo de blogs y notas</a> para todas las entradas.</p>
 
