@@ -2,5 +2,5 @@ author:
   name: "Antonio Moreno"
   role: "Ingeniero de investigación en IA"
   bio: "Exploro IA práctica, LLMs y ciencia de datos aplicada."
-  photo: "/assets/img/fotoperfil.png"
+  photo: "/assets/img/ia/fotoperfil.png"   # <-- aquí va el /ia/
   email: "anthoniomoreno1@gmail.com"
