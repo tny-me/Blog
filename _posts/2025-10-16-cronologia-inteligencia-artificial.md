@@ -4,7 +4,7 @@ title: "La cronología sobre la Inteligencia Artificial"
 date: 2025-10-17
 categories: ["IA"]
 tags: ["inteligencia artificial"]
-image: "/Blog/assets/img/ia/Computer-timeline.png"
+image: "/assets/img/ia/Computer-timeline.png"
 ---
 
 
