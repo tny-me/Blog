@@ -4,6 +4,7 @@ title: Inicio
 ---
 
 <style>
+/* ---------- Estilos base ---------- */
 .hero{max-width:980px;margin:0 auto 32px;display:grid;grid-template-columns:220px 1fr;gap:24px;align-items:start}
 .hero h1{margin:0 0 8px;font-size:30px}
 .hero p{margin:10px 0}
@@ -26,6 +27,36 @@ title: Inicio
   .post-item{grid-template-columns:90px 1fr}
   .post-thumb{width:90px;height:90px}
 }
+
+/* ---------- Botón de tema ---------- */
+.btn-theme{
+  display:inline-block; padding:6px 10px; border-radius:8px; border:1px solid #e5e7eb;
+  background:#ffffff; cursor:pointer; font-size:14px;
+}
+.btn-theme:hover{ background:#f3f4f6 }
+
+/* ---------- Tema oscuro al activar data-theme="dark" ---------- */
+html[data-theme="dark"] body { background:#0f1115; color:#e5e7eb; }
+html[data-theme="dark"] a { color:#8dd2ff; }
+html[data-theme="dark"] .page-header { background:linear-gradient(120deg,#0d1b2a,#0b1320); }
+html[data-theme="dark"] .site-footer { color:#a3a3a3; }
+html[data-theme="dark"] .post-sep { border-top-color:#23262d; }
+html[data-theme="dark"] .post-thumb { background:#111827; border-color:#23262d; }
+html[data-theme="dark"] .hero .photo { box-shadow:0 6px 22px rgba(0,0,0,.55); }
+html[data-theme="dark"] .btn-theme { background:#0f172a; color:#e5e7eb; border-color:#334155; }
+html[data-theme="dark"] .btn-theme:hover { background:#111827; }
+
+/* ---------- Preferencia del sistema (si no hay guardada) ---------- */
+@media (prefers-color-scheme: dark){
+  html:not([data-theme]) body { background:#0f1115; color:#e5e7eb; }
+  html:not([data-theme]) a { color:#8dd2ff; }
+  html:not([data-theme]) .page-header { background:linear-gradient(120deg,#0d1b2a,#0b1320); }
+  html:not([data-theme]) .site-footer { color:#a3a3a3; }
+  html:not([data-theme]) .post-sep { border-top-color:#23262d; }
+  html:not([data-theme]) .post-thumb { background:#111827; border-color:#23262d; }
+  html:not([data-theme]) .hero .photo { box-shadow:0 6px 22px rgba(0,0,0,.55); }
+  html:not([data-theme]) .btn-theme { background:#0f172a; color:#e5e7eb; border-color:#334155; }
+}
 </style>
 
 <!-- HERO: FOTO + BIO -->
@@ -41,6 +72,7 @@ title: Inicio
     <p class="links">
       <a href="{{ site.baseurl }}/feed.xml">Feed RSS</a>
       <a href="mailto:{{ site.author.email }}">Contacto</a>
+      <button id="theme-toggle" class="btn-theme" type="button">🌙 Oscuro</button>
     </p>
   </div>
 </div>
@@ -73,3 +105,32 @@ title: Inicio
     {% endfor %}
   {% endif %}
 </div>
+
+<!-- ---------- JS: interruptor de tema (toggle) ---------- -->
+<script>
+(() => {
+  const STORAGE_KEY = 'theme';
+  const root = document.documentElement;
+  const btn = document.getElementById('theme-toggle');
+
+  function label(theme){
+    btn.textContent = theme === 'dark' ? '☀️ Claro' : '🌙 Oscuro';
+  }
+  function apply(theme){
+    root.setAttribute('data-theme', theme);
+    localStorage.setItem(STORAGE_KEY, theme);
+    label(theme);
+  }
+
+  // Preferencia guardada o sistema
+  const saved = localStorage.getItem(STORAGE_KEY);
+  const initial = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  apply(initial);
+
+  // Cambiar con el botón
+  btn.addEventListener('click', () => {
+    const current = root.getAttribute('data-theme') || initial;
+    apply(current === 'dark' ? 'light' : 'dark');
+  });
+})();
+</script>
