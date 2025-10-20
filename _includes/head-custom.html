@@ -1,0 +1,80 @@
+<!-- MODO OSCURO GLOBAL + BOTÓN EN CABECERA (CAYMAN) -->
+<style>
+/* Botón en la cabecera (esquina superior derecha) */
+.theme-toggle-wrap{
+  position:absolute; top:14px; right:16px; display:flex; align-items:center; gap:8px;
+}
+.btn-theme{
+  display:inline-block; padding:6px 10px; border-radius:8px; border:1px solid #e5e7eb;
+  background:#ffffff; cursor:pointer; font-size:14px;
+}
+.btn-theme:hover{ background:#f3f4f6 }
+
+/* Oscuro */
+html[data-theme="dark"] body { background:#0f1115; color:#e5e7eb; }
+html[data-theme="dark"] a { color:#8dd2ff; }
+html[data-theme="dark"] .page-header { background:linear-gradient(120deg,#0d1b2a,#0b1320); }
+html[data-theme="dark"] .site-footer,
+html[data-theme="dark"] .site-footer-owner,
+html[data-theme="dark"] .site-footer-credits { color:#a3a3a3; }
+html[data-theme="dark"] .main-content h1,
+html[data-theme="dark"] .main-content h2,
+html[data-theme="dark"] .main-content h3 { color:#e5e7eb; }
+
+/* Si usas las tarjetas del home */
+html[data-theme="dark"] .post-sep { border-top-color:#23262d; }
+html[data-theme="dark"] .post-thumb { background:#111827; border-color:#23262d; }
+
+/* Preferencia del sistema si no hay guardada */
+@media (prefers-color-scheme: dark){
+  html:not([data-theme]) body { background:#0f1115; color:#e5e7eb; }
+  html:not([data-theme]) a { color:#8dd2ff; }
+  html:not([data-theme]) .page-header { background:linear-gradient(120deg,#0d1b2a,#0b1320); }
+}
+</style>
+
+<script>
+(function(){
+  const STORAGE_KEY = 'theme';
+  const root = document.documentElement;
+
+  function setLabel(btn, theme){
+    if (!btn) return;
+    btn.textContent = theme === 'dark' ? '☀️ Claro' : '🌙 Oscuro';
+  }
+  function apply(theme, btn){
+    root.setAttribute('data-theme', theme);
+    localStorage.setItem(STORAGE_KEY, theme);
+    setLabel(btn, theme);
+  }
+
+  // Inicial: guardado o sistema
+  const saved = localStorage.getItem(STORAGE_KEY);
+  const initial = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  apply(initial);
+
+  // Insertar botón en cabecera del tema Cayman
+  document.addEventListener('DOMContentLoaded', function(){
+    const header = document.querySelector('.page-header');
+    if (!header) return;
+
+    const wrap = document.createElement('div');
+    wrap.className = 'theme-toggle-wrap';
+
+    const btn = document.createElement('button');
+    btn.id = 'theme-toggle';
+    btn.className = 'btn-theme';
+    btn.type = 'button';
+    btn.textContent = initial === 'dark' ? '☀️ Claro' : '🌙 Oscuro';
+
+    wrap.appendChild(btn);
+    header.style.position = 'relative';
+    header.appendChild(wrap);
+
+    btn.addEventListener('click', () => {
+      const current = root.getAttribute('data-theme') || initial;
+      apply(current === 'dark' ? 'light' : 'dark', btn);
+    });
+  });
+})();
+</script>
