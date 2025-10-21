@@ -78,3 +78,36 @@ html[data-theme="dark"] .post-thumb { background:#111827; border-color:#23262d; 
   });
 })();
 </script>
+<!-- Tipografía en verde militar (global) -->
+<style>
+/* Paleta (ajústala si quieres otro tono) */
+:root{
+  --brand: #4B5320;   /* Army Green */
+  --text:  #2B3A2A;   /* Verde oscuro para texto */
+  --link:  #3E5E3E;   /* Verde para enlaces */
+  --muted: #6E7B6C;   /* Texto secundario/fechas */
+}
+
+/* Texto principal y enlaces */
+body{ color: var(--text); }
+a{ color: var(--link); }
+a:hover{ color:#587f58; }
+
+/* Encabezados y títulos */
+.page-header .project-name,
+.main-content h1, .main-content h2, .main-content h3{
+  color: var(--brand);
+}
+
+/* Tarjetas/lista de posts */
+.post-title{ color: var(--brand); }
+.post-date, .post-excerpt{ color: var(--muted); }
+
+/* Hero (portada) */
+.hero h1{ color: var(--brand); }
+.hero p{ color: var(--text); }
+.hero .links a{ color: var(--link); }
+
+/* Pie */
+.site-footer, .site-footer-owner, .site-footer-credits{ color: var(--muted); }
+</style>
