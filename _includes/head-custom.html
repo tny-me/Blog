@@ -134,3 +134,27 @@ html[data-theme="dark"] .post-thumb{ background:transparent; }
   });
 })();
 </script>
+<style>
+/* --- Overrides: foto de perfil plana (sin círculo ni sombra) --- */
+.hero .photo{
+  width: 100%;
+  max-width: 220px;
+  height: auto;
+  object-fit: contain;
+  object-position: center;
+  border-radius: 0 !important;   /* quita círculo */
+  box-shadow: none !important;   /* quita sombra */
+  background: transparent !important;
+  padding: 0 !important;
+}
+
+/* --- Enlaces en rojo --- */
+a, .main-content a{
+  color: #c1121f !important;     /* rojo */
+  text-decoration-color: #c1121f;
+}
+a:hover, .main-content a:hover{
+  color: #8a0d16 !important;     /* rojo más oscuro al hover */
+  text-decoration-color: #8a0d16;
+}
+</style>
