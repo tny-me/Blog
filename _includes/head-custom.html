@@ -1,6 +1,9 @@
-<!-- MODO OSCURO GLOBAL + BOTÓN EN CABECERA (CAYMAN) -->
+<!-- HEAD CUSTOM: mantiene diseño original, sin cambiar tipografía.
+     Solo ajusta imágenes (portada y miniaturas) para que NO se recorten.
+     Deja el modo oscuro opcional con botón en cabecera (si ya lo usas). -->
+
 <style>
-/* Botón en la cabecera (esquina superior derecha) */
+/* --- Botón de tema en la cabecera (Cayman) --- */
 .theme-toggle-wrap{
   position:absolute; top:14px; right:16px; display:flex; align-items:center; gap:8px;
 }
@@ -10,7 +13,7 @@
 }
 .btn-theme:hover{ background:#f3f4f6 }
 
-/* Oscuro */
+/* --- Modo oscuro (si no lo usas, puedes borrar esta sección y el script) --- */
 html[data-theme="dark"] body { background:#0f1115; color:#e5e7eb; }
 html[data-theme="dark"] a { color:#8dd2ff; }
 html[data-theme="dark"] .page-header { background:linear-gradient(120deg,#0d1b2a,#0b1320); }
@@ -20,78 +23,43 @@ html[data-theme="dark"] .site-footer-credits { color:#a3a3a3; }
 html[data-theme="dark"] .main-content h1,
 html[data-theme="dark"] .main-content h2,
 html[data-theme="dark"] .main-content h3 { color:#e5e7eb; }
-
-/* Si usas las tarjetas del home */
 html[data-theme="dark"] .post-sep { border-top-color:#23262d; }
-html[data-theme="dark"] .post-thumb { background:#111827; border-color:#23262d; }
 
-/* Preferencia del sistema si no hay guardada */
-@media (prefers-color-scheme: dark){
-  html:not([data-theme]) body { background:#0f1115; color:#e5e7eb; }
-  html:not([data-theme]) a { color:#8dd2ff; }
-  html:not([data-theme]) .page-header { background:linear-gradient(120deg,#0d1b2a,#0b1320); }
-}
+/* --- Ajuste de imágenes sin alterar el layout/estética --- */
 
-/* =========================
-   TIPOGRAFÍA VERDE MILITAR
-   ========================= */
-:root{
-  --brand: #4B5320;   /* Army Green */
-  --text:  #2B3A2A;   /* Verde oscuro para texto */
-  --link:  #3E5E3E;   /* Verde para enlaces */
-  --muted: #6E7B6C;   /* Texto secundario/fechas */
-}
-body{ color: var(--text); }
-a{ color: var(--link); }
-a:hover{ color:#587f58; }
-.page-header .project-name,
-.main-content h1, .main-content h2, .main-content h3{ color: var(--brand); }
-.post-title{ color: var(--brand); }
-.post-date, .post-excerpt{ color: var(--muted); }
-.hero h1{ color: var(--brand); }
-.hero p{ color: var(--text); }
-.hero .links a{ color: var(--link); }
-.site-footer, .site-footer-owner, .site-footer-credits{ color: var(--muted); }
-
-/* =========================================
-   MEJORA: FOTOS SIN RECORTE (se adaptan)
-   - Foto de portada (.hero .photo)
-   - Miniaturas de posts (.post-thumb)
-   ========================================= */
+/* Foto de portada (bio): se adapta sin recortarse */
 .hero .photo{
   width:100%;
-  max-width:220px;   /* controla el ancho máximo en desktop */
-  height:auto;       /* altura automática para no deformar */
-  object-fit:contain;    /* CLAVE: no recorta */
+  max-width:220px;           /* mantiene proporción del diseño */
+  height:auto;               /* NO fija alto => no deforma */
+  object-fit:contain;        /* CLAVE: no recorta */
   object-position:center;
-  border-radius:12px;    /* puedes quitar si la prefieres cuadrada */
-  background:#fff;       /* fondo blanco cuando sobren márgenes */
-  padding:0;             /* pon 6-8px si quieres “marco” blanco */
+  border-radius:12px;        /* déjalo si te gusta suave; quítalo si la prefieres cuadrada */
   box-shadow:0 6px 20px rgba(0,0,0,.08);
+  background:transparent;
+  padding:0;                 /* sin padding para no mover el layout */
 }
 
+/* Miniatura de la lista de posts:
+   mantiene el bloque de 110x110 para que el texto siga alineado igual */
+.post-list .post-item{ grid-template-columns:110px 1fr; }
 .post-thumb{
-  width:100%;
-  height:110px;          /* mantiene alto visual consistente en cards */
-  object-fit:contain;    /* CLAVE: no recorta */
+  width:110px; height:110px;
+  object-fit:contain;        /* no recorta, encaja dentro */
   object-position:center;
-  background:#fff;
-  padding:6px;           /* pequeño marco para que respire */
-  border:1px solid #e5e5e5;
-  border-radius:8px;
+  background:transparent;    /* respeta el fondo del tema */
+  padding:0; border:0;       /* sin marcos para no “ensanchar” la miniatura */
+  border-radius:8px;         /* opcional, queda bien con imágenes cuadradas */
 }
 
-/* Ajuste responsive */
+/* Pequeño ajuste responsive (opcional) */
 @media (max-width:780px){
   .hero .photo{ max-width:160px; }
 }
-
-/* Versiones en modo oscuro para fondos/bordes */
-html[data-theme="dark"] .hero .photo{ background:#0b0d12; box-shadow:0 6px 22px rgba(0,0,0,.55); }
-html[data-theme="dark"] .post-thumb{ background:#0b0d12; border-color:#23262d; }
 </style>
 
 <script>
+/* Toggle de tema (opcional). Si no lo quieres, borra este script y los estilos del modo oscuro. */
 (function(){
   const STORAGE_KEY = 'theme';
   const root = document.documentElement;
@@ -106,12 +74,10 @@ html[data-theme="dark"] .post-thumb{ background:#0b0d12; border-color:#23262d; }
     setLabel(btn, theme);
   }
 
-  // Inicial: guardado o sistema
   const saved = localStorage.getItem(STORAGE_KEY);
   const initial = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
   apply(initial);
 
-  // Insertar botón en cabecera del tema Cayman
   document.addEventListener('DOMContentLoaded', function(){
     const header = document.querySelector('.page-header');
     if (!header) return;
