@@ -1,9 +1,7 @@
-<!-- HEAD CUSTOM: mantiene diseño original, sin cambiar tipografía.
-     Solo ajusta imágenes (portada y miniaturas) para que NO se recorten.
-     Deja el modo oscuro opcional con botón en cabecera (si ya lo usas). -->
+<!-- HEAD CUSTOM: Verde militar + imágenes sin recorte + (opcional) modo oscuro -->
 
 <style>
-/* --- Botón de tema en la cabecera (Cayman) --- */
+/* ---------------- Botón del tema en cabecera (Cayman) ---------------- */
 .theme-toggle-wrap{
   position:absolute; top:14px; right:16px; display:flex; align-items:center; gap:8px;
 }
@@ -13,7 +11,7 @@
 }
 .btn-theme:hover{ background:#f3f4f6 }
 
-/* --- Modo oscuro (si no lo usas, puedes borrar esta sección y el script) --- */
+/* ---------------- Modo oscuro (opcional) ---------------- */
 html[data-theme="dark"] body { background:#0f1115; color:#e5e7eb; }
 html[data-theme="dark"] a { color:#8dd2ff; }
 html[data-theme="dark"] .page-header { background:linear-gradient(120deg,#0d1b2a,#0b1320); }
@@ -25,41 +23,75 @@ html[data-theme="dark"] .main-content h2,
 html[data-theme="dark"] .main-content h3 { color:#e5e7eb; }
 html[data-theme="dark"] .post-sep { border-top-color:#23262d; }
 
-/* --- Ajuste de imágenes sin alterar el layout/estética --- */
-
-/* Foto de portada (bio): se adapta sin recortarse */
-.hero .photo{
-  width:100%;
-  max-width:220px;           /* mantiene proporción del diseño */
-  height:auto;               /* NO fija alto => no deforma */
-  object-fit:contain;        /* CLAVE: no recorta */
-  object-position:center;
-  border-radius:12px;        /* déjalo si te gusta suave; quítalo si la prefieres cuadrada */
-  box-shadow:0 6px 20px rgba(0,0,0,.08);
-  background:transparent;
-  padding:0;                 /* sin padding para no mover el layout */
+/* ---------------- VERDE MILITAR (tu paleta) ---------------- */
+:root{
+  --brand: #4B5320;   /* Army Green (títulos) */
+  --text:  #2B3A2A;   /* Verde muy oscuro (texto base) */
+  --link:  #3E5E3E;   /* Verde enlaces */
+  --muted: #6E7B6C;   /* Texto secundario/fechas */
 }
 
-/* Miniatura de la lista de posts:
-   mantiene el bloque de 110x110 para que el texto siga alineado igual */
+/* Texto principal y enlaces */
+body{ color: var(--text); }
+a{ color: var(--link); }
+a:hover{ color:#587f58; }
+
+/* Encabezados y títulos */
+.page-header .project-name,
+.main-content h1, .main-content h2, .main-content h3{
+  color: var(--brand);
+}
+
+/* Lista de posts */
+.post-title{ color: var(--brand); }
+.post-date, .post-excerpt{ color: var(--muted); }
+
+/* Hero (portada/bio) */
+.hero h1{ color: var(--brand); }
+.hero p{ color: var(--text); }
+.hero .links a{ color: var(--link); }
+
+/* Pie de página */
+.site-footer, .site-footer-owner, .site-footer-credits{ color: var(--muted); }
+
+/* ---------------- Imágenes SIN recorte (mantengo tu diseño) ---------------- */
+
+/* Foto de portada (bio) */
+.hero .photo{
+  width:100%;
+  max-width:220px;      /* conserva proporción del layout */
+  height:auto;          /* no fuerza alto => no deforma */
+  object-fit:contain;   /* CLAVE: no recorta */
+  object-position:center;
+  border-radius:12px;   /* quita si la prefieres cuadrada */
+  box-shadow:0 6px 20px rgba(0,0,0,.08);
+  background:transparent;
+  padding:0;
+}
+
+/* Miniatura en la lista de posts: mantiene 110x110 para no mover el texto */
 .post-list .post-item{ grid-template-columns:110px 1fr; }
 .post-thumb{
   width:110px; height:110px;
-  object-fit:contain;        /* no recorta, encaja dentro */
+  object-fit:contain;   /* no recorta */
   object-position:center;
-  background:transparent;    /* respeta el fondo del tema */
-  padding:0; border:0;       /* sin marcos para no “ensanchar” la miniatura */
-  border-radius:8px;         /* opcional, queda bien con imágenes cuadradas */
+  background:transparent;
+  padding:0; border:0;  /* sin marcos para que no “engorde” la miniatura */
+  border-radius:8px;    /* opcional */
 }
 
-/* Pequeño ajuste responsive (opcional) */
+/* Responsive */
 @media (max-width:780px){
   .hero .photo{ max-width:160px; }
 }
+
+/* Ajustes de fondos en oscuro para que no se vean “cortes” */
+html[data-theme="dark"] .hero .photo{ background:transparent; box-shadow:0 6px 22px rgba(0,0,0,.55); }
+html[data-theme="dark"] .post-thumb{ background:transparent; }
 </style>
 
 <script>
-/* Toggle de tema (opcional). Si no lo quieres, borra este script y los estilos del modo oscuro. */
+/* Toggle de tema (opcional). Si no lo quieres, borra este script y la sección de modo oscuro arriba. */
 (function(){
   const STORAGE_KEY = 'theme';
   const root = document.documentElement;
