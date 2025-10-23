@@ -148,13 +148,34 @@ html[data-theme="dark"] .post-thumb{ background:transparent; }
   padding: 0 !important;
 }
 
-/* --- Enlaces en rojo --- */
-a, .main-content a{
-  color: #c1121f !important;     /* rojo */
-  text-decoration-color: #c1121f;
+<style>
+/* --- Foto de perfil plana (sin círculo ni sombra) --- */
+.hero .photo{
+  width: 100%;
+  max-width: 220px;
+  height: auto;
+  object-fit: contain;
+  object-position: center;
+  border-radius: 0 !important;   /* quita círculo */
+  box-shadow: none !important;   /* quita sombra */
+  background: transparent !important;
+  padding: 0 !important;
 }
-a:hover, .main-content a:hover{
-  color: #8a0d16 !important;     /* rojo más oscuro al hover */
-  text-decoration-color: #8a0d16;
+
+/* --- Enlaces en VERDE MILITAR (usa tu paleta existente) --- */
+/* Aplica a enlaces globales, enlaces de títulos y de bio */
+a,
+.main-content a,
+.post-title a,
+.hero .links a {
+  color: var(--link) !important;              /* vuelve al verde militar */
+  text-decoration-color: var(--link) !important;
+}
+a:hover,
+.main-content a:hover,
+.post-title a:hover,
+.hero .links a:hover {
+  color: #587f58 !important;                  /* verde más intenso al hover */
+  text-decoration-color: #587f58 !important;
 }
 </style>
