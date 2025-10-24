@@ -46,8 +46,6 @@ title: Inicio
 
 <!-- LISTA DE POSTS -->
 <h2 class="section-title">Notas y entradas de blog recientes</h2>
-<p class="section-sub">Ver <a href="{{ site.baseurl }}/archive/">Archivo de blogs y notas</a> para todas las entradas.</p>
-
 <div class="post-list">
   {% assign posts = site.posts %}
   {% if posts == empty %}
