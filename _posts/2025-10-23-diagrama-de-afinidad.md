@@ -5,12 +5,10 @@ date: 2025-10-23
 description: "Guía técnica y clara para estructurar ideas con diagramas de afinidad (método KJ), con ejemplos prácticos."
 tags: [afinidad, brainstorming, estrategia, ciencia-de-datos, producto]
 author: "Antonio Moreno"
-image: /assets/img/ia/diagramadeafinidad.png
+image: /assets/img/ia/diagramadeafinidad.png   # <- SOLO para la portada/listado
 ---
 
 # Los Diagrama de afinidad
-
-![Cuándo usar un diagrama de afinidad](/assets/img/ia/diagramadeafinidad.png)
 
 En proyectos con muchas voces e hipótesis, el ruido mata la claridad. El **diagrama de afinidad** es un método simple y potente para **agrupar ideas relacionadas**, revelar **patrones** y orientar decisiones sin perder velocidad.
 
