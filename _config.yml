@@ -1,6 +1,10 @@
 author:
   name: "Antonio Moreno"
   role: "Ingeniero de investigación en IA"
-  bio: "Exploro IA práctica, LLMs y ciencia de datos aplicada."
+  bio: "Soy Ingeniero en Ciencias de Datos y Analista de Modelos de Negocio. He analizado datos de comportamiento, rendimiento y eficiencia para optimizar decisiones estratégicas y modelos operativos en entornos empresariales. Recientemente colaboré con OpenAI, diseñando prompts y escenarios complejos orientados a fortalecer el razonamiento estructurado, analítico y humano de sus modelos.
+
+En este espacio publico ensayos sobre tecnología, ciencia de datos e inteligencia artificial para acercar el conocimiento tecnológico y explicar sus avances con claridad.
+
+Agradezco a mis profesores Rav Ahuja, líder global en Data & AI en IBM, y Sebastian Raschka, investigador en aprendizaje profundo y autor de obras fundamentales en Machine Learning, quienes me han enseñado con su rigor académico a comprender la ciencia de datos como un puente entre el pensamiento analítico, la tecnología y el progreso humano."
   photo: "/assets/img/ia/fotoperfil.png"   # <-- aquí va el /ia/
   email: "anthoniomoreno1@gmail.com"
