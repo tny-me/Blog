@@ -8,21 +8,39 @@ title: Inicio
 .hero h1{margin:0 0 8px;font-size:30px}
 .hero p{margin:10px 0}
 .hero .links a{margin-right:14px;text-decoration:underline}
-.hero .photo{width:200px;height:200px;border-radius:999px;object-fit:cover;box-shadow:0 6px 20px rgba(0,0,0,.08)}
+
+/* Foto plana (sin círculo ni sombra) */
+.hero .photo{
+  width:200px;
+  height:auto;
+  object-fit:contain;
+  object-position:center;
+  border-radius:0;
+  box-shadow:none;
+}
+
 .section-title{text-align:center;font-size:24px;margin:36px 0 10px}
 .section-sub{text-align:center;margin-bottom:22px}
+
 .post-list{max-width:920px;margin:0 auto}
 .post-item{display:grid;grid-template-columns:110px 1fr;gap:18px;padding:18px 0}
-.post-thumb{width:110px;height:110px;border-radius:8px;object-fit:cover;background:#f2f2f2;border:1px solid #e5e5e5}
+
+/* Miniatura de portada */
+.post-thumb{
+  width:110px;height:110px;border-radius:8px;
+  object-fit:cover;background:#f2f2f2;border:1px solid #e5e5e5
+}
+
 .post-title{font-size:20px;margin:0 0 6px;line-height:1.25}
 .post-title a{color:inherit;text-decoration:none}
 .post-title a:hover{text-decoration:underline}
 .post-date{color:#6b7280;margin:0 0 6px;font-size:14px}
 .post-excerpt{color:#4b5563;margin:0}
 .post-sep{border:0;border-top:1px solid #e5e7eb;margin:10px 0}
+
 @media (max-width:780px){
   .hero{grid-template-columns:1fr}
-  .hero .photo{width:140px;height:140px;justify-self:center}
+  .hero .photo{width:160px;justify-self:center}
   .post-item{grid-template-columns:90px 1fr}
   .post-thumb{width:90px;height:90px}
 }
@@ -44,6 +62,10 @@ title: Inicio
   </div>
 </div>
 
+<h2 class="section-title">Notas y entradas de blog recientes</h2>
+<p class="section-sub">Ver <a href="{{ site.baseurl }}/archive/">Archivo de blogs y notas</a> para todas las entradas.</p>
+
+<!-- LISTA DE POSTS (con extracto robusto) -->
 <div class="post-list">
   {% assign posts = site.posts %}
   {% if posts == empty %}
@@ -66,12 +88,8 @@ title: Inicio
 
           <p class="post-date">{{ post.date | date: "%-d de %B de %Y" }}</p>
 
-          {%- comment -%} EXTRACTO con fallback a 'description' {%- endcomment -%}
-          {% capture teaser %}{{ post.excerpt | strip_html | strip_newlines | replace: '  ', ' ' }}{% endcapture %}
-          {% if teaser == '' and post.description %}
-            {% assign teaser = post.description %}
-          {% endif %}
-          {% if teaser != '' %}
+          {% assign teaser = post.excerpt | strip_html | strip | default: post.description | strip %}
+          {% if teaser and teaser != '' %}
             <p class="post-excerpt">{{ teaser | truncate: 220 }}</p>
           {% endif %}
         </div>
