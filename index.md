@@ -44,8 +44,6 @@ title: Inicio
   </div>
 </div>
 
-<!-- LISTA DE POSTS -->
-<h2 class="section-title">Notas y entradas de blog recientes</h2>
 <div class="post-list">
   {% assign posts = site.posts %}
   {% if posts == empty %}
@@ -60,12 +58,25 @@ title: Inicio
             <img class="post-thumb" src="{{ '/assets/img/posts/placeholder.png' | relative_url }}" alt="">
           {% endif %}
         </a>
+
         <div>
-          <h3 class="post-title"><a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a></h3>
+          <h3 class="post-title">
+            <a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a>
+          </h3>
+
           <p class="post-date">{{ post.date | date: "%-d de %B de %Y" }}</p>
-          <p class="post-excerpt">{{ post.excerpt | strip_html | truncate: 220 }}</p>
+
+          {%- comment -%} EXTRACTO con fallback a 'description' {%- endcomment -%}
+          {% capture teaser %}{{ post.excerpt | strip_html | strip_newlines | replace: '  ', ' ' }}{% endcapture %}
+          {% if teaser == '' and post.description %}
+            {% assign teaser = post.description %}
+          {% endif %}
+          {% if teaser != '' %}
+            <p class="post-excerpt">{{ teaser | truncate: 220 }}</p>
+          {% endif %}
         </div>
       </article>
+
       {% unless forloop.last %}<hr class="post-sep">{% endunless %}
     {% endfor %}
   {% endif %}
