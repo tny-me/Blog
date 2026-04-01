@@ -1,0 +1,45 @@
+---
+interface Props {
+  title: string;
+  slug: string;
+  date: Date;
+  type?: string;
+  description?: string;
+  image?: string;
+}
+
+const { title, slug, date, type = 'general', description, image } = Astro.props;
+
+const dateFormatted = date.toLocaleDateString('es-MX', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+});
+
+const typeLabels: Record<string, string> = {
+  reflexion: 'Reflexión',
+  carta: 'Carta',
+  fe: 'Fe',
+  espiritu: 'Espíritu',
+  general: 'General',
+};
+---
+
+<li class="post-card">
+  {image && (
+    <a href={`/posts/${slug}`}>
+      <img class="post-card-thumb" src={image} alt={title} loading="lazy" />
+    </a>
+  )}
+
+  <div class="post-card-meta">
+    <time class="post-date" datetime={date.toISOString()}>{dateFormatted}</time>
+    <span class={`post-type type-${type}`}>{typeLabels[type] ?? type}</span>
+  </div>
+
+  <h2 class="post-card-title">
+    <a href={`/posts/${slug}`}>{title}</a>
+  </h2>
+
+  {description && <p class="post-card-excerpt">{description}</p>}
+</li>
