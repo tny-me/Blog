@@ -3,7 +3,7 @@ title: "Los Diagramas de Afinidad"
 date: 2025-10-23
 description: "Guía técnica y clara para estructurar ideas con diagramas de afinidad (método KJ), con ejemplos prácticos."
 type: general
-image: /assets/img/ia/diagramadeafinidad.png
+image: /Blog/assets/img/ia/diagramadeafinidad.png
 tags: [afinidad, brainstorming, estrategia, ciencia-de-datos, producto]
 ---
 

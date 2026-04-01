@@ -9,6 +9,8 @@ interface Props {
 }
 
 const { title, slug, date, type = 'general', description, image } = Astro.props;
+const base = import.meta.env.BASE_URL;
+const postUrl = `${base}posts/${slug}`;
 
 const dateFormatted = date.toLocaleDateString('es-MX', {
   day: 'numeric',
@@ -27,7 +29,7 @@ const typeLabels: Record<string, string> = {
 
 <li class="post-card">
   {image && (
-    <a href={`/posts/${slug}`}>
+    <a href={postUrl}>
       <img class="post-card-thumb" src={image} alt={title} loading="lazy" />
     </a>
   )}
@@ -38,7 +40,7 @@ const typeLabels: Record<string, string> = {
   </div>
 
   <h2 class="post-card-title">
-    <a href={`/posts/${slug}`}>{title}</a>
+    <a href={postUrl}>{title}</a>
   </h2>
 
   {description && <p class="post-card-excerpt">{description}</p>}
