@@ -1,0 +1,54 @@
+---
+import Layout from './Layout.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+  date: Date;
+  type?: string;
+  image?: string;
+}
+
+const { title, description, date, type = 'general', image } = Astro.props;
+
+const dateFormatted = date.toLocaleDateString('es-MX', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+});
+
+const typeLabels: Record<string, string> = {
+  reflexion: 'Reflexión',
+  carta: 'Carta',
+  fe: 'Fe',
+  espiritu: 'Espíritu',
+  general: 'General',
+};
+---
+
+<Layout title={title} description={description} image={image}>
+  <div class="container">
+    <article>
+      <header class="post-header">
+        <div class="post-header-meta">
+          <time class="post-date" datetime={date.toISOString()}>{dateFormatted}</time>
+          <span class={`post-type type-${type}`}>{typeLabels[type] ?? type}</span>
+        </div>
+        <h1 class="post-title-main">{title}</h1>
+        {description && <p class="post-description">{description}</p>}
+      </header>
+
+      {image && (
+        <img class="post-cover" src={image} alt={title} loading="lazy" />
+      )}
+
+      <div class="post-body">
+        <slot />
+      </div>
+
+      <footer class="post-footer">
+        <a href="/" class="back-link">← Volver al inicio</a>
+      </footer>
+    </article>
+  </div>
+</Layout>

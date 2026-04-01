@@ -1,0 +1,97 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+  image?: string;
+}
+
+const { title, description = 'Reflexiones de espíritu, fe y vida — Antonio Moreno', image } = Astro.props;
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+---
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="canonical" href={canonicalURL} />
+
+  <title>{title} — Antonio Moreno</title>
+  <meta name="description" content={description} />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content={`${title} — Antonio Moreno`} />
+  <meta property="og:description" content={description} />
+  <meta property="og:url" content={canonicalURL} />
+  <meta property="og:type" content="website" />
+  {image && <meta property="og:image" content={new URL(image, Astro.site)} />}
+
+  <!-- Favicon simple -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="Antonio Moreno" href="/rss.xml" />
+
+</head>
+
+<body>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="/" class="site-name">Antonio Moreno</a>
+      <nav class="site-nav">
+        <a href="/">Inicio</a>
+        <a href="/about">Acerca</a>
+        <button class="btn-theme" id="theme-toggle" type="button">Oscuro</button>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <slot />
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <span class="footer-ornament">✦</span>
+      <p>
+        <a href="mailto:anthoniomoreno1@gmail.com">Contacto</a>
+        &nbsp;·&nbsp;
+        <a href="/rss.xml">RSS</a>
+      </p>
+      <p style="margin-top: 0.5rem;">© {new Date().getFullYear()} Antonio Moreno</p>
+    </div>
+  </footer>
+
+</body>
+
+<script>
+  // Theme toggle
+  const STORAGE_KEY = 'theme';
+  const root = document.documentElement;
+  const btn = document.getElementById('theme-toggle');
+
+  function applyTheme(theme: string) {
+    root.setAttribute('data-theme', theme);
+    localStorage.setItem(STORAGE_KEY, theme);
+    if (btn) btn.textContent = theme === 'dark' ? 'Claro' : 'Oscuro';
+  }
+
+  const saved = localStorage.getItem(STORAGE_KEY);
+  const initial = saved ?? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  applyTheme(initial);
+
+  btn?.addEventListener('click', () => {
+    const current = root.getAttribute('data-theme') ?? 'light';
+    applyTheme(current === 'dark' ? 'light' : 'dark');
+  });
+</script>
+</html>

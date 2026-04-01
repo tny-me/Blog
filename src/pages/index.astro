@@ -1,0 +1,51 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PostCard from '../components/PostCard.astro';
+import { getCollection } from 'astro:content';
+
+const allPosts = await getCollection('posts', ({ data }) => !data.draft);
+const posts = allPosts.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+---
+
+<Layout title="Inicio">
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-ornament">✦ ✦ ✦</div>
+      <img
+        class="hero-photo"
+        src="/assets/img/ia/fotoperfil.png"
+        alt="Antonio Moreno"
+      />
+      <h1>Antonio Moreno</h1>
+      <p class="tagline">Reflexiones de espíritu, fe y vida</p>
+      <p class="hero-bio">
+        Un espacio para escribir con honestidad sobre lo que importa: la fe,
+        el alma, las preguntas que no tienen respuesta fácil y los momentos
+        que merecen ser recordados.
+      </p>
+      <div class="hero-links">
+        <a href="mailto:anthoniomoreno1@gmail.com">Contacto</a>
+        <a href="/rss.xml">RSS</a>
+        <a href="/about">Sobre mí</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Posts -->
+  <div class="container">
+    <p class="posts-section-title">Entradas recientes</p>
+    <ul class="post-list">
+      {posts.map((post) => (
+        <PostCard
+          title={post.data.title}
+          slug={post.slug}
+          date={post.data.date}
+          type={post.data.type}
+          description={post.data.description}
+          image={post.data.image}
+        />
+      ))}
+    </ul>
+  </div>
+</Layout>
