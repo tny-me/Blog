@@ -18,54 +18,44 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="canonical" href={canonicalURL} />
-
   <title>{title} — Antonio Moreno</title>
   <meta name="description" content={description} />
-
-  <!-- Open Graph -->
   <meta property="og:title" content={`${title} — Antonio Moreno`} />
   <meta property="og:description" content={description} />
   <meta property="og:url" content={canonicalURL} />
-  <meta property="og:type" content="website" />
   {image && <meta property="og:image" content={new URL(image, Astro.site)} />}
-
   <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
-
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-
   <link rel="alternate" type="application/rss+xml" title="Antonio Moreno" href={`${base}rss.xml`} />
 </head>
 
 <body>
-
   <header class="site-header">
     <div class="header-inner">
       <a href={base} class="site-name">Antonio Moreno</a>
       <nav class="site-nav">
         <a href={base}>Inicio</a>
         <a href={`${base}about`}>Acerca</a>
-        <button class="btn-theme" id="theme-toggle" type="button">Oscuro</button>
+        <button class="btn-theme" id="theme-toggle" type="button">[ ]</button>
       </nav>
     </div>
   </header>
 
-  <main>
-    <slot />
-  </main>
+  <hr class="divider" />
+
+  <main><slot /></main>
 
   <footer class="site-footer">
-    <div class="container">
-      <span class="footer-ornament">✦</span>
+    <div class="footer-inner">
+      <p>© {new Date().getFullYear()} Antonio Moreno</p>
       <p>
-        <a href="mailto:anthoniomoreno1@gmail.com">Contacto</a>
+        <a href="mailto:anthoniomoreno1@gmail.com">Email</a>
         &nbsp;·&nbsp;
         <a href={`${base}rss.xml`}>RSS</a>
       </p>
-      <p style="margin-top: 0.5rem;">© {new Date().getFullYear()} Antonio Moreno</p>
     </div>
   </footer>
-
 </body>
 
 <script>
@@ -76,7 +66,7 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
   function applyTheme(theme: string) {
     root.setAttribute('data-theme', theme);
     localStorage.setItem(STORAGE_KEY, theme);
-    if (btn) btn.textContent = theme === 'dark' ? 'Claro' : 'Oscuro';
+    if (btn) btn.textContent = theme === 'dark' ? '[●]' : '[ ]';
   }
 
   const saved = localStorage.getItem(STORAGE_KEY);
@@ -84,8 +74,7 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
   applyTheme(initial);
 
   btn?.addEventListener('click', () => {
-    const current = root.getAttribute('data-theme') ?? 'light';
-    applyTheme(current === 'dark' ? 'light' : 'dark');
+    applyTheme((root.getAttribute('data-theme') ?? 'light') === 'dark' ? 'light' : 'dark');
   });
 </script>
 </html>

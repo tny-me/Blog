@@ -10,36 +10,26 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 
 <Layout title="Inicio">
   <div class="container">
-    <!-- Hero -->
     <section class="hero">
-      <div class="hero-inner">
-        <img class="hero-photo" src={`${base}assets/img/ia/fotoperfil.png`} alt="Antonio Moreno" />
-        <div>
-          <p class="hero-name">Antonio Moreno</p>
-          <p class="hero-tagline">Reflexiones de espíritu, fe y vida</p>
-          <div class="hero-links">
-            <a href={`${base}about`}>Acerca</a>
-            <a href="mailto:anthoniomoreno1@gmail.com">Contacto</a>
-            <a href={`${base}rss.xml`}>RSS</a>
-          </div>
-        </div>
+      <p class="hero-name">Antonio Moreno</p>
+      <p class="hero-tagline">Reflexiones de espíritu, fe y vida</p>
+      <div class="hero-links">
+        <a href={`${base}about`}>acerca</a>
+        <a href="mailto:anthoniomoreno1@gmail.com">email</a>
       </div>
     </section>
 
-    <!-- Feed -->
-    <section class="posts-feed">
-      <ul class="post-list">
-        {posts.map((post) => (
-          <PostCard
-            title={post.data.title}
-            slug={post.slug}
-            date={post.data.date}
-            type={post.data.type}
-            description={post.data.description}
-            image={post.data.image}
-          />
-        ))}
-      </ul>
-    </section>
+    <ul class="post-list">
+      {posts.map((post) => (
+        <PostCard
+          title={post.data.title}
+          slug={post.slug}
+          date={post.data.date}
+          type={post.data.type}
+          description={post.data.description}
+          image={post.data.image}
+        />
+      ))}
+    </ul>
   </div>
 </Layout>
