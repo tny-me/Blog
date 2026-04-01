@@ -1,19 +1,12 @@
 ---
 import Layout from '../layouts/Layout.astro';
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 ---
 
-<Layout title="Acerca" description="Sobre Antonio Moreno — reflexiones de espíritu, fe y vida">
+<Layout title="Acerca" description="Sobre Antonio Moreno">
   <div class="container about-page">
-    <img
-      class="about-photo"
-      src="/assets/img/ia/fotoperfil.png"
-      alt="Antonio Moreno"
-    />
-
-    <h1 style="text-align:center; margin-bottom: 0.5rem;">Antonio Moreno</h1>
-    <p style="text-align:center; color: var(--muted); font-style:italic; margin-bottom:2.5rem;">
-      Reflexiones de espíritu, fe y vida
-    </p>
+    <img class="about-photo" src={`${base}assets/img/ia/fotoperfil.png`} alt="Antonio Moreno" />
+    <h1>Antonio Moreno</h1>
 
     <p>
       Este blog es un espacio personal donde comparto reflexiones sobre la fe,
@@ -28,7 +21,7 @@ import Layout from '../layouts/Layout.astro';
     </p>
 
     <p>
-      Si algo de lo que escribo te resuena, te invito a escribirme.
+      Si algo de lo que escribo te resuena, escríbeme.
     </p>
 
     <p>

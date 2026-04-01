@@ -28,20 +28,27 @@ const typeLabels: Record<string, string> = {
 ---
 
 <Layout title={title} description={description} image={image}>
-  <div class="container">
+  <div class="container post-page">
     <article>
       <header class="post-header">
         <div class="post-header-meta">
-          <time class="post-date" datetime={date.toISOString()}>{dateFormatted}</time>
-          <span class={`post-type type-${type}`}>{typeLabels[type] ?? type}</span>
+          {type !== 'general' && (
+            <span class="post-type">{typeLabels[type] ?? type}</span>
+          )}
         </div>
         <h1 class="post-title-main">{title}</h1>
         {description && <p class="post-description">{description}</p>}
       </header>
 
-      {image && (
-        <img class="post-cover" src={image} alt={title} loading="lazy" />
-      )}
+      <div class="post-byline">
+        <img class="post-byline-photo" src={`${base}assets/img/ia/fotoperfil.png`} alt="Antonio Moreno" />
+        <div>
+          <p class="post-byline-name">Antonio Moreno</p>
+          <time class="post-byline-date" datetime={date.toISOString()}>{dateFormatted}</time>
+        </div>
+      </div>
+
+      {image && <img class="post-cover" src={image} alt={title} loading="lazy" />}
 
       <div class="post-body">
         <slot />

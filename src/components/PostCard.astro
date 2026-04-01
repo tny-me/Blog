@@ -27,21 +27,21 @@ const typeLabels: Record<string, string> = {
 };
 ---
 
-<li class="post-card">
-  {image && (
-    <a href={postUrl}>
-      <img class="post-card-thumb" src={image} alt={title} loading="lazy" />
-    </a>
-  )}
-
-  <div class="post-card-meta">
-    <time class="post-date" datetime={date.toISOString()}>{dateFormatted}</time>
-    <span class={`post-type type-${type}`}>{typeLabels[type] ?? type}</span>
+<li class="post-card" onclick={`window.location='${postUrl}'`}>
+  <div class="post-card-body">
+    <div class="post-card-meta">
+      {type !== 'general' && (
+        <span class="post-type">{typeLabels[type] ?? type}</span>
+      )}
+      <time class="post-date" datetime={date.toISOString()}>{dateFormatted}</time>
+    </div>
+    <h2 class="post-card-title">
+      <a href={postUrl}>{title}</a>
+    </h2>
+    {description && <p class="post-card-excerpt">{description}</p>}
   </div>
 
-  <h2 class="post-card-title">
-    <a href={postUrl}>{title}</a>
-  </h2>
-
-  {description && <p class="post-card-excerpt">{description}</p>}
+  {image && (
+    <img class="post-card-thumb" src={image} alt={title} loading="lazy" />
+  )}
 </li>
