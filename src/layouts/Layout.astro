@@ -9,7 +9,7 @@ interface Props {
 
 const { title, description = 'Reflexiones de espíritu, fe y vida — Antonio Moreno', image } = Astro.props;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
-const base = import.meta.env.BASE_URL;
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 ---
 
 <!DOCTYPE html>
