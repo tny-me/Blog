@@ -19,11 +19,11 @@ const dateFormatted = date.toLocaleDateString('es-MX', {
 });
 
 const typeLabels: Record<string, string> = {
-  reflexion: 'reflexión',
-  carta: 'carta',
-  fe: 'fe',
-  espiritu: 'espíritu',
-  general: '',
+  reflexion: 'Reflexión',
+  carta: 'Carta',
+  fe: 'Fe',
+  espiritu: 'Espíritu',
+  general: 'Entrada',
 };
 ---
 
@@ -31,22 +31,20 @@ const typeLabels: Record<string, string> = {
   <div class="container post-page">
     <article>
       <header class="post-header">
-        <div class="post-header-top">
-          <time datetime={date.toISOString()}>{dateFormatted}</time>
-          {type !== 'general' && <span>{typeLabels[type]}</span>}
-        </div>
+        <p class="post-label">{typeLabels[type] ?? type}</p>
         <h1 class="post-title-main">{title}</h1>
         {description && <p class="post-description">{description}</p>}
+        <p class="post-byline">{dateFormatted} · Antonio Moreno</p>
       </header>
 
-      {image && <img class="post-cover" src={image} alt={title} loading="lazy" style="margin-bottom:2rem;" />}
+      {image && <img class="post-cover" src={image} alt={title} loading="lazy" />}
 
       <div class="post-body">
         <slot />
       </div>
 
       <footer class="post-footer">
-        <a href={base} class="back-link">← volver</a>
+        <a href={base} class="back-link">← Volver al inicio</a>
       </footer>
     </article>
   </div>

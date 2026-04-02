@@ -6,34 +6,56 @@ interface Props {
   type?: string;
   description?: string;
   image?: string;
+  featured?: boolean;
 }
 
-const { title, slug, date, type = 'general', description } = Astro.props;
+const { title, slug, date, type = 'general', description, image, featured = false } = Astro.props;
 const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 const postUrl = `${base}posts/${slug}`;
 
 const dateFormatted = date.toLocaleDateString('es-MX', {
   day: 'numeric',
-  month: 'short',
+  month: 'long',
   year: 'numeric',
 });
 
 const typeLabels: Record<string, string> = {
-  reflexion: 'reflexión',
-  carta: 'carta',
-  fe: 'fe',
-  espiritu: 'espíritu',
-  general: '',
+  reflexion: 'Reflexión',
+  carta: 'Carta',
+  fe: 'Fe',
+  espiritu: 'Espíritu',
+  general: 'Entrada',
 };
 ---
 
-<li class="post-card">
-  <div class="post-card-title">
-    <a href={postUrl}>{title}</a>
-    {description && <span style="display:block; font-size:0.8rem; color:var(--muted); font-weight:400; margin-top:0.2rem;">{description}</span>}
-  </div>
-  <div class="post-card-right">
-    <time class="post-date" datetime={date.toISOString()}>{dateFormatted}</time>
-    {type !== 'general' && <span class="post-type">{typeLabels[type]}</span>}
-  </div>
-</li>
+{featured ? (
+  <li class="post-card-featured">
+    {image && (
+      <a href={postUrl}>
+        <img class="post-card-image" src={image} alt={title} loading="lazy" />
+      </a>
+    )}
+    <p class="post-card-label">{typeLabels[type] ?? type}</p>
+    <h2 class="post-card-title">
+      <a href={postUrl}>{title}</a>
+    </h2>
+    {description && <p class="post-card-excerpt">{description}</p>}
+    <p class="post-card-date">{dateFormatted}</p>
+  </li>
+) : (
+  <li class={`post-card${!image ? ' post-card-no-image' : ''}`}>
+    <div>
+      <p class="post-card-label">{typeLabels[type] ?? type}</p>
+      <h2 class="post-card-title">
+        <a href={postUrl}>{title}</a>
+      </h2>
+      {description && <p class="post-card-excerpt">{description}</p>}
+      <p class="post-card-date">{dateFormatted}</p>
+    </div>
+    {image && (
+      <a href={postUrl}>
+        <img class="post-card-image" src={image} alt={title} loading="lazy" />
+      </a>
+    )}
+  </li>
+)}

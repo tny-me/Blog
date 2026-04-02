@@ -1,31 +1,29 @@
 ---
 import Layout from '../layouts/Layout.astro';
-const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 ---
 
 <Layout title="Acerca" description="Sobre Antonio Moreno">
-  <div class="container about-page">
-    <img class="about-photo" src={`${base}assets/img/ia/fotoperfil.png`} alt="Antonio Moreno" />
-    <h1>Antonio Moreno</h1>
+  <div class="container">
+    <div class="about-page">
+      <h1>Sobre mí</h1>
 
-    <p>
-      Este blog es un espacio personal donde comparto reflexiones sobre la fe,
-      el espíritu y la vida cotidiana. Cartas a nadie y a todos. Preguntas que
-      no tienen respuesta fácil. Momentos que merecen ser escritos.
-    </p>
+      <p>
+        Este blog es un espacio personal donde escribo sobre la fe, el espíritu
+        y la vida cotidiana. Cartas a nadie y a todos. Preguntas que no tienen
+        respuesta fácil. Momentos que merecen ser escritos.
+      </p>
 
-    <p>
-      También soy ingeniero en ciencias de datos. He trabajado con análisis de
-      comportamiento, business intelligence y operaciones. Pero aquí no vengo
-      a hablar de datos — vengo a hablar de lo que los datos no pueden medir.
-    </p>
+      <p>
+        También soy ingeniero en ciencias de datos. He trabajado con análisis
+        de comportamiento, business intelligence y operaciones. Pero aquí no
+        vengo a hablar de datos — vengo a hablar de lo que los datos no pueden
+        medir.
+      </p>
 
-    <p>
-      Si algo de lo que escribo te resuena, escríbeme.
-    </p>
-
-    <p>
-      <a href="mailto:anthoniomoreno1@gmail.com">anthoniomoreno1@gmail.com</a>
-    </p>
+      <p>
+        Si algo de lo que escribo te resuena, escríbeme a
+        <a href="mailto:anthoniomoreno1@gmail.com">anthoniomoreno1@gmail.com</a>.
+      </p>
+    </div>
   </div>
 </Layout>

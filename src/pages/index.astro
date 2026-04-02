@@ -5,22 +5,28 @@ import { getCollection } from 'astro:content';
 
 const allPosts = await getCollection('posts', ({ data }) => !data.draft);
 const posts = allPosts.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
-const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+const [featured, ...rest] = posts;
 ---
 
 <Layout title="Inicio">
   <div class="container">
-    <section class="hero">
-      <p class="hero-name">Antonio Moreno</p>
-      <p class="hero-tagline">Reflexiones de espíritu, fe y vida</p>
-      <div class="hero-links">
-        <a href={`${base}about`}>acerca</a>
-        <a href="mailto:anthoniomoreno1@gmail.com">email</a>
-      </div>
+    <section class="home-intro">
+      <p>Un espacio de reflexión sobre la fe, el espíritu y los momentos que merecen ser escritos.</p>
     </section>
 
     <ul class="post-list">
-      {posts.map((post) => (
+      {featured && (
+        <PostCard
+          title={featured.data.title}
+          slug={featured.slug}
+          date={featured.data.date}
+          type={featured.data.type}
+          description={featured.data.description}
+          image={featured.data.image}
+          featured={true}
+        />
+      )}
+      {rest.map((post) => (
         <PostCard
           title={post.data.title}
           slug={post.slug}
