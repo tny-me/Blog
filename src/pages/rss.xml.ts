@@ -7,7 +7,7 @@ export async function GET(context: APIContext) {
   const sorted = posts.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 
   return rss({
-    title: 'Antonio Moreno',
+    title: 'Tonny',
     description: 'Reflexiones de espíritu, fe y vida',
     site: context.site!,
     items: sorted.map((post) => ({
