@@ -530,3 +530,105 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
   object-fit: cover;
   margin-bottom: 1.25rem;
 }
+
+/* ════════════════════════════════
+   BLOQUES DE CONTENIDO
+   Se usan igual en el editor y en la entrada publicada.
+════════════════════════════════ */
+
+/* ── Destacado ── */
+.destacado {
+  display: grid;
+  grid-template-columns: 1.35rem minmax(0, 1fr);
+  gap: 0.7rem;
+  align-items: start;
+  border-radius: 4px;
+  padding: 0.9rem 1rem;
+  margin: 1.25rem 0;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  background: var(--rail);
+  border: 1px solid var(--border);
+}
+.destacado::before {
+  content: "ℹ";
+  font-size: 1rem;
+  line-height: 1.5;
+  opacity: 0.85;
+}
+.destacado > * { grid-column: 2; }
+.destacado > * + * { margin-top: 0.5rem; }
+.destacado p:last-child { margin-bottom: 0; }
+
+.destacado[data-tipo="nota"]  { background: #E7F3F8; border-color: #C7E2EE; }
+.destacado[data-tipo="idea"]  { background: #FBF3DB; border-color: #EFE0AE; }
+.destacado[data-tipo="idea"]::before  { content: "💡"; }
+.destacado[data-tipo="aviso"] { background: #FDEBEC; border-color: #F5CDD0; }
+.destacado[data-tipo="aviso"]::before { content: "⚠"; }
+
+[data-theme="dark"] .destacado[data-tipo="nota"]  { background: #1A2B33; border-color: #23404C; }
+[data-theme="dark"] .destacado[data-tipo="idea"]  { background: #2C2413; border-color: #45391C; }
+[data-theme="dark"] .destacado[data-tipo="aviso"] { background: #2E1B1C; border-color: #4A2A2C; }
+
+/* ── Imagen con pie ── */
+.figura { margin: 1.5rem 0; }
+.figura img {
+  width: 100%;
+  border-radius: 4px;
+  background: var(--rail);
+}
+.figura figcaption {
+  margin-top: 0.5rem;
+  font-size: 0.8125rem;
+  color: var(--muted);
+  text-align: center;
+  line-height: 1.5;
+}
+
+/* ── Vídeo ── */
+.video {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  margin: 1.5rem 0;
+  border-radius: 4px;
+  overflow: hidden;
+  background: #000;
+}
+.video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+
+/* ── Diagramas ── */
+.diagrama {
+  margin: 1.5rem 0;
+  padding: 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--rail);
+  overflow-x: auto;
+  text-align: center;
+}
+.diagrama svg { max-width: 100%; height: auto; margin: 0 auto; }
+
+/* ── Tablas dentro del editor ── */
+.ProseMirror table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.25rem 0;
+  table-layout: fixed;
+  overflow: hidden;
+}
+.ProseMirror th, .ProseMirror td {
+  border: 1px solid var(--border);
+  padding: 0.45rem 0.6rem;
+  vertical-align: top;
+  position: relative;
+  min-width: 4rem;
+}
+.ProseMirror th { background: var(--rail); font-weight: 600; text-align: left; }
+.ProseMirror .selectedCell::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(35, 131, 226, 0.16);
+  pointer-events: none;
+}

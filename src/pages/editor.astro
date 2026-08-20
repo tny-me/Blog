@@ -35,6 +35,7 @@ const today = new Date().toISOString().slice(0, 10);
       </span>
       <span class="reader-acts">
         <button class="btn" id="ed-new" type="button">Nueva</button>
+        <button class="btn" id="ed-diagramas" type="button">Diagramas</button>
         <button class="btn" id="ed-list" type="button">Mis entradas</button>
         <button class="btn" id="ed-key" type="button">Acceso</button>
         <button class="btn btn-primary" id="ed-publish" type="button">Publicar</button>
@@ -64,6 +65,12 @@ const today = new Date().toISOString().slice(0, 10);
         Elige <em>Only select repositories → Blog</em> y en permisos
         <em>Repository permissions → Contents → Read and write</em>.
       </p>
+    </div>
+
+    <!-- Los diagramas se escriben como texto: aqui se ven dibujados -->
+    <div class="ed-panel" id="ed-diagpanel" hidden>
+      <p class="eyebrow">Diagramas de la entrada</p>
+      <div id="ed-diagramas-out"></div>
     </div>
 
     <!-- Entradas publicadas: editar o eliminar -->
@@ -117,7 +124,8 @@ const today = new Date().toISOString().slice(0, 10);
         <div id="ed-body" class="body"></div>
 
         <p class="ed-hint ed-foot-hint">
-          Escribe <kbd>/</kbd> para insertar títulos, listas, citas, código o imágenes.
+          Escribe <kbd>/</kbd> para insertar títulos, listas, tablas, destacados,
+          imágenes, vídeos, mapas conceptuales y diagramas de flujo.
           También funcionan los atajos de Markdown: <kbd># </kbd>, <kbd>- </kbd>,
           <kbd>&gt; </kbd>, <kbd>```</kbd>.
         </p>
@@ -304,8 +312,11 @@ const today = new Date().toISOString().slice(0, 10);
   import StarterKit from '@tiptap/starter-kit';
   import Placeholder from '@tiptap/extension-placeholder';
   import Link from '@tiptap/extension-link';
+  import { TableKit } from '@tiptap/extension-table';
   import TurndownService from 'turndown';
+  import { gfm } from 'turndown-plugin-gfm';
   import { marked } from 'marked';
+  import { Destacado, Figura, Video, urlDeVideo, PLANTILLA_MAPA, PLANTILLA_FLUJO } from '../lib/editor-blocks';
   import { slugify } from '../lib/slug';
 
   const REPO = { owner: 'tny-me', name: 'Blog', branch: 'main' };
@@ -380,6 +391,10 @@ const today = new Date().toISOString().slice(0, 10);
     element: $('ed-body'),
     extensions: [
       StarterKit.configure({ heading: { levels: [1, 2, 3] } }),
+      TableKit.configure({ table: { resizable: false } }),
+      Destacado,
+      Figura,
+      Video,
       Link.configure({ openOnClick: false }),
       Placeholder.configure({ placeholder: 'Escribe, o pulsa "/" para insertar un bloque…' }),
     ],
@@ -450,9 +465,42 @@ const today = new Date().toISOString().slice(0, 10);
     { key: 'cita quote', label: 'Cita', sub: 'Texto destacado', ico: '❝', run: () => chain().toggleBlockquote().run() },
     { key: 'codigo code bloque', label: 'Código', sub: 'Bloque monoespaciado', ico: '{}', run: () => chain().toggleCodeBlock().run() },
     { key: 'divisor separador linea', label: 'Divisor', sub: 'Línea horizontal', ico: '—', run: () => chain().setHorizontalRule().run() },
-    { key: 'imagen foto subir', label: 'Imagen', sub: 'Subir desde tu equipo', ico: '🖼', run: () => els.file.click() },
+    { key: 'imagen foto subir', label: 'Imagen', sub: 'Subir con pie de foto', ico: '🖼', run: () => els.file.click() },
     { key: 'enlace link url', label: 'Enlace', sub: 'Añadir una liga', ico: '↗', run: promptLink },
+    { key: 'tabla cuadro filas columnas', label: 'Tabla', sub: '3 columnas con encabezado', ico: '▦',
+      run: () => chain().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run() },
+    { key: 'destacado nota callout informacion azul', label: 'Destacado · Nota', sub: 'Recuadro azul', ico: '🔵',
+      run: () => (chain() as any).ponerDestacado('nota').run() },
+    { key: 'destacado idea callout consejo', label: 'Destacado · Idea', sub: 'Recuadro ámbar', ico: '🟡',
+      run: () => (chain() as any).ponerDestacado('idea').run() },
+    { key: 'destacado aviso alerta advertencia cuidado', label: 'Destacado · Aviso', sub: 'Recuadro rojo', ico: '🔴',
+      run: () => (chain() as any).ponerDestacado('aviso').run() },
+    { key: 'mapa conceptual mental esquema ideas', label: 'Mapa conceptual', sub: 'Ramas desde un tema central', ico: '🕸',
+      run: () => insertarDiagrama(PLANTILLA_MAPA) },
+    { key: 'diagrama flujo proceso pasos decision', label: 'Diagrama de flujo', sub: 'Pasos y decisiones', ico: '⤳',
+      run: () => insertarDiagrama(PLANTILLA_FLUJO) },
+    { key: 'video youtube vimeo incrustar', label: 'Vídeo', sub: 'YouTube o Vimeo', ico: '▶', run: promptVideo },
   ];
+
+  /** Los diagramas viajan como bloque de código en lenguaje mermaid. */
+  function insertarDiagrama(plantilla: string) {
+    editor.chain().focus()
+      .insertContent({
+        type: 'codeBlock',
+        attrs: { language: 'mermaid' },
+        content: [{ type: 'text', text: plantilla }],
+      })
+      .run();
+    toast('Diagrama insertado. Pulsa «Diagramas» arriba para verlo dibujado.', 7000);
+  }
+
+  function promptVideo() {
+    const pegado = window.prompt('Pega la dirección del vídeo (YouTube o Vimeo)');
+    if (!pegado) return;
+    const src = urlDeVideo(pegado);
+    if (!src) return toast('No reconocí esa dirección. Deben ser de YouTube o Vimeo.', 8000);
+    (editor.chain().focus() as any).ponerVideo(src).run();
+  }
 
   let slashOpen = false;
   let slashFrom = 0;
@@ -562,8 +610,8 @@ const today = new Date().toISOString().slice(0, 10);
     try {
       const b64 = await fileToBase64(file);
       await putFile(path, b64, `Subir imagen ${name}`);
-      chain().insertContent(`<img src="/assets/img/${name}" alt="${file.name}">`).run();
-      toast('Imagen subida.');
+      (chain() as any).ponerFigura({ src: `/assets/img/${name}`, alt: file.name, pie: 'Pie de foto' }).run();
+      toast('Imagen subida. Escribe encima del pie de foto para cambiarlo.', 7000);
     } catch (err) {
       toast(`No se pudo subir la imagen: ${(err as Error).message}`, 9000);
     }
@@ -586,13 +634,40 @@ const today = new Date().toISOString().slice(0, 10);
     emDelimiter: '*',
   });
 
+  // Tablas al formato de Markdown extendido, que Astro ya sabe renderizar.
+  turndown.use(gfm);
+
+  // Los bloques propios no tienen equivalente en Markdown: se guardan como el
+  // HTML que Astro renderizará, sin que turndown los desarme.
+  turndown.addRule('bloquesPropios', {
+    filter: (node) =>
+      ['ASIDE', 'FIGURE', 'DIV'].includes(node.nodeName) &&
+      /\b(destacado|figura|video)\b/.test((node as HTMLElement).className ?? ''),
+    replacement: (_contenido, node) => `\n\n${(node as HTMLElement).outerHTML}\n\n`,
+  });
+
   // El editor envuelve el contenido de cada <li> en un <p>, y eso produce listas
   // sueltas con un renglon en blanco entre puntos. Se quitan esos envoltorios.
   function tightHtml(html: string): string {
     const doc = new DOMParser().parseFromString(html, 'text/html');
-    doc.querySelectorAll('li > p:only-child').forEach((p) => {
+    // El editor envuelve el contenido de listas y celdas en parrafos. Dentro de
+    // una celda eso parte la fila en varias lineas y rompe la tabla.
+    doc.querySelectorAll('li > p:only-child, th > p:only-child, td > p:only-child').forEach((p) => {
       p.replaceWith(...Array.from(p.childNodes));
     });
+
+    // El editor decora las tablas con medidas y atributos que no aportan nada
+    // al archivo publicado y estorban a la conversion a Markdown.
+    doc.querySelectorAll('table colgroup').forEach((c) => c.remove());
+    doc.querySelectorAll('table [style], table[style]').forEach((e) => e.removeAttribute('style'));
+    doc.querySelectorAll('[colspan="1"]').forEach((e) => e.removeAttribute('colspan'));
+    doc.querySelectorAll('[rowspan="1"]').forEach((e) => e.removeAttribute('rowspan'));
+
+    // Filas totalmente vacias al final de una tabla: no aportan nada.
+    doc.querySelectorAll('table tr').forEach((tr) => {
+      if (![...tr.children].some((c) => (c.textContent ?? '').trim())) tr.remove();
+    });
+
     return doc.body.innerHTML;
   }
 
@@ -845,6 +920,47 @@ const today = new Date().toISOString().slice(0, 10);
     localStorage.removeItem(DRAFT_KEY);
     els.titulo.focus();
   }
+
+  // ── Vista previa de los diagramas ─────────────────────────
+  const salidaDiag = $('ed-diagramas-out');
+  const panelDiag = $('ed-diagpanel');
+
+  $('ed-diagramas').addEventListener('click', async () => {
+    panelDiag.hidden = !panelDiag.hidden;
+    if (panelDiag.hidden) return;
+
+    const codigos: string[] = [];
+    editor.state.doc.descendants((nodo) => {
+      if (nodo.type.name === 'codeBlock' && nodo.attrs.language === 'mermaid') {
+        codigos.push(nodo.textContent);
+      }
+    });
+
+    if (codigos.length === 0) {
+      salidaDiag.innerHTML = '<p class="ed-note">Esta entrada no tiene diagramas. Inserta uno con «/».</p>';
+      return;
+    }
+
+    salidaDiag.innerHTML = '<p class="ed-note">Dibujando…</p>';
+    const { default: mermaid } = await import('mermaid');
+    const { configuracionMermaid } = await import('../lib/diagramas');
+    mermaid.initialize(
+      configuracionMermaid(document.documentElement.getAttribute('data-theme') === 'dark')
+    );
+
+    salidaDiag.innerHTML = '';
+    for (const [i, codigo] of codigos.entries()) {
+      const caja = document.createElement('div');
+      caja.className = 'diagrama';
+      try {
+        const { svg } = await mermaid.render(`vista-${i}-${codigos.length}`, codigo);
+        caja.innerHTML = svg;
+      } catch (err) {
+        caja.innerHTML = `<p class="ed-note">Diagrama ${i + 1}: ${(err as Error).message}</p>`;
+      }
+      salidaDiag.appendChild(caja);
+    }
+  });
 
   els.listBtn.addEventListener('click', () => {
     els.listPanel.hidden = !els.listPanel.hidden;

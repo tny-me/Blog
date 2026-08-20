@@ -111,3 +111,29 @@ const dateFormatted = date.toLocaleDateString('es-MX', {
     </footer>
   </article>
 </Shell>
+
+<script>
+  // Los diagramas viajan como bloques de codigo en lenguaje mermaid. Astro los
+  // pasa por su resaltador, que marca el <pre> con data-language. Solo se
+  // descarga la libreria si la entrada abierta tiene alguno.
+  const bloques = document.querySelectorAll('pre[data-language="mermaid"]');
+  if (bloques.length > 0) {
+    const { default: mermaid } = await import('mermaid');
+    const { configuracionMermaid } = await import('../lib/diagramas');
+    mermaid.initialize(
+      configuracionMermaid(document.documentElement.getAttribute('data-theme') === 'dark')
+    );
+
+    for (const [i, bloque] of [...bloques].entries()) {
+      const caja = document.createElement('div');
+      caja.className = 'diagrama';
+      try {
+        const { svg } = await mermaid.render(`diagrama-${i}`, bloque.textContent ?? '');
+        caja.innerHTML = svg;
+        bloque.replaceWith(caja);
+      } catch {
+        // Si el diagrama tiene un error de sintaxis se deja el codigo a la vista.
+      }
+    }
+  }
+</script>
