@@ -1,40 +1,64 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import PostCard from '../components/PostCard.astro';
+import Shell from '../layouts/Shell.astro';
 import { getCollection } from 'astro:content';
+import { slugify, categoryColor } from '../lib/slug';
 
 const posts = (await getCollection('posts', ({ data }) => !data.draft)).sort(
   (a, b) => b.data.date.getTime() - a.data.date.getTime()
 );
+
+const categories = [...new Set(posts.map((p) => p.data.category))].map((name) => ({
+  name,
+  slug: slugify(name),
+  color: categoryColor(name),
+  count: posts.filter((p) => p.data.category === name).length,
+}));
+
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+const last = posts[0];
 ---
 
-<Layout title="Inicio" topbar="Ensayos">
-  <div class="doc">
-    <section class="intro">
-      <h1>Antonio Moreno</h1>
-      <p>
-        Un espacio de reflexión sobre la fe, el espíritu y los momentos que
-        merecen ser escritos.
-      </p>
-    </section>
+<Shell title="Inicio" crumb="Inicio" view="list">
+  <h1 class="hero-title">Antonio Moreno</h1>
+  <p class="hero-sub">
+    Ingeniero en ciencias de datos. Escribo ensayos sobre datos, producto y las
+    cosas que los datos no alcanzan a medir.
+  </p>
 
-    <div class="list-head">
-      <span class="label">Todos los ensayos</span>
-      <span class="label">{posts.length}</span>
+  <div class="stats">
+    <div>
+      <div class="stat-num">{posts.length}</div>
+      <div class="stat-key">Entradas</div>
     </div>
-
-    <ul class="post-list">
-      {posts.map((post) => (
-        <PostCard
-          title={post.data.title}
-          slug={post.slug}
-          date={post.data.date}
-          type={post.data.type}
-          description={post.data.description}
-          image={post.data.image}
-          tags={post.data.tags}
-        />
-      ))}
-    </ul>
+    <div>
+      <div class="stat-num">{categories.length}</div>
+      <div class="stat-key">Categorías</div>
+    </div>
+    {last && (
+      <div>
+        <div class="stat-num">{last.data.date.toLocaleDateString('es-MX', { day: 'numeric', month: 'short' })}</div>
+        <div class="stat-key">Última publicación</div>
+      </div>
+    )}
   </div>
-</Layout>
+
+  <hr class="divider" />
+
+  <p class="eyebrow" style="margin-bottom:0.75rem;">Categorías</p>
+  <div class="cat-grid">
+    {categories.map((cat) => (
+      <a href={`${base}categoria/${cat.slug}`} class="cat-card">
+        <span class="cat-card-name">
+          <span class="rail-swatch" style={`background:${cat.color}`}></span>
+          {cat.name}
+        </span>
+        <span class="cat-card-count">{cat.count} {cat.count === 1 ? 'entrada' : 'entradas'}</span>
+      </a>
+    ))}
+  </div>
+
+  <footer class="page-foot">
+    <span>Selecciona una entrada en el panel de la izquierda para leerla.</span>
+    <a href={`${base}editor`}>Escribir una entrada →</a>
+  </footer>
+</Shell>

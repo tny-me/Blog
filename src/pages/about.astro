@@ -1,22 +1,25 @@
 ---
-import Layout from '../layouts/Layout.astro';
+import Shell from '../layouts/Shell.astro';
 ---
 
-<Layout title="Acerca" description="Sobre Antonio Moreno" topbar="Acerca">
-  <article class="doc">
-    <h1 class="doc-title">Sobre mí</h1>
+<Shell title="Acerca" description="Sobre Antonio Moreno" crumb="Acerca" view="reader">
+  <article>
+    <h1 class="page-title">Sobre mí</h1>
 
     <div class="props">
       <div class="prop">
         <span class="prop-key">Autor</span>
         <span class="prop-val">
-          <span class="prop-author"><span class="prop-avatar">AM</span> Antonio Moreno</span>
+          <span class="prop-person">
+            <span class="rail-avatar" style="width:20px;height:20px;font-size:0.6rem;">AM</span>
+            Antonio Moreno
+          </span>
         </span>
       </div>
       <div class="prop">
         <span class="prop-key">Correo</span>
         <span class="prop-val">
-          <a href="mailto:anthoniomoreno1@gmail.com">anthoniomoreno1@gmail.com</a>
+          <a href="mailto:anthoniomoreno1@gmail.com" class="prop-chip">anthoniomoreno1@gmail.com</a>
         </span>
       </div>
     </div>
@@ -24,23 +27,21 @@ import Layout from '../layouts/Layout.astro';
     <hr class="divider" />
 
     <div class="body">
-      <p class="about-lede">
+      <p>
         Este blog es un espacio personal donde escribo sobre la fe, el espíritu
         y la vida cotidiana. Cartas a nadie y a todos. Preguntas que no tienen
         respuesta fácil. Momentos que merecen ser escritos.
       </p>
-
       <p>
         También soy ingeniero en ciencias de datos. He trabajado con análisis
         de comportamiento, business intelligence y operaciones. Pero aquí no
-        vengo a hablar de datos — vengo a hablar de lo que los datos no pueden
-        medir.
+        vengo a hablar solo de datos — vengo a hablar de lo que los datos no
+        pueden medir.
       </p>
-
       <p>
         Si algo de lo que escribo te resuena, escríbeme a
         <a href="mailto:anthoniomoreno1@gmail.com">anthoniomoreno1@gmail.com</a>.
       </p>
     </div>
   </article>
-</Layout>
+</Shell>

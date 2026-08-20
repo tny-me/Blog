@@ -1,6 +1,7 @@
 ---
 title: "La cronología sobre la Inteligencia Artificial"
 date: 2025-10-17
+category: "Ciencia de datos"
 description: "A pesar de su breve historia, las computadoras y la IA han transformado fundamentalmente lo que vemos, sabemos y hacemos."
 type: general
 image: /assets/img/ia/Computer-timeline.png

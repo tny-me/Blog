@@ -1,0 +1,54 @@
+---
+import Shell from '../../layouts/Shell.astro';
+import { getCollection } from 'astro:content';
+import { slugify, categoryColor } from '../../lib/slug';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts', ({ data }) => !data.draft);
+  const names = [...new Set(posts.map((p) => p.data.category))];
+  return names.map((name) => ({
+    params: { slug: slugify(name) },
+    props: { name },
+  }));
+}
+
+const { name } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+
+const posts = (await getCollection('posts', ({ data }) => !data.draft && data.category === name))
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+---
+
+<Shell
+  title={name}
+  description={`Entradas de la categoría ${name}`}
+  category={name}
+  listTitle={name}
+  crumb={name}
+  view="list"
+>
+  <h1 class="hero-title">
+    <span class="rail-swatch" style={`background:${categoryColor(name)};width:12px;height:12px;display:inline-block;margin-right:0.6rem;`}></span>
+    {name}
+  </h1>
+  <p class="hero-sub">
+    {posts.length} {posts.length === 1 ? 'entrada' : 'entradas'} en esta categoría.
+  </p>
+
+  <hr class="divider" />
+
+  <div class="body">
+    <ul>
+      {posts.map((post) => (
+        <li>
+          <a href={`${base}posts/${post.slug}`}>{post.data.title}</a>
+          {post.data.description && <> — <span style="color:var(--muted)">{post.data.description}</span></>}
+        </li>
+      ))}
+    </ul>
+  </div>
+
+  <footer class="page-foot">
+    <a href={base}>← Todas las entradas</a>
+  </footer>
+</Shell>
