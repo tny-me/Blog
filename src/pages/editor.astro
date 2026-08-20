@@ -34,6 +34,8 @@ const today = new Date().toISOString().slice(0, 10);
         <span class="pill" id="ed-state">Borrador local</span>
       </span>
       <span class="reader-acts">
+        <button class="btn" id="ed-new" type="button">Nueva</button>
+        <button class="btn" id="ed-list" type="button">Mis entradas</button>
         <button class="btn" id="ed-key" type="button">Acceso</button>
         <button class="btn btn-primary" id="ed-publish" type="button">Publicar</button>
       </span>
@@ -62,6 +64,17 @@ const today = new Date().toISOString().slice(0, 10);
         Elige <em>Only select repositories → Blog</em> y en permisos
         <em>Repository permissions → Contents → Read and write</em>.
       </p>
+    </div>
+
+    <!-- Entradas publicadas: editar o eliminar -->
+    <div class="ed-panel" id="ed-listpanel" hidden>
+      <p class="eyebrow">Entradas publicadas</p>
+      <p class="ed-note">
+        Se leen directamente del repositorio. <strong>Editar</strong> carga la entrada
+        aquí para modificarla; al publicar se sobrescribe. <strong>Eliminar</strong>
+        la borra del sitio y no se puede deshacer desde aquí.
+      </p>
+      <div id="ed-posts"></div>
     </div>
 
     <main class="ed-doc">
@@ -157,6 +170,23 @@ const today = new Date().toISOString().slice(0, 10);
     border-radius: 4px;
     padding: 0.35rem 0.6rem;
   }
+
+  .ed-post {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.55rem 0.6rem;
+    border-radius: 4px;
+    border-bottom: 1px solid var(--border);
+  }
+  .ed-post:last-child { border-bottom: none; }
+  .ed-post:hover { background: var(--hover); }
+  .ed-post-main { flex: 1; min-width: 0; }
+  .ed-post-title { font-size: 0.875rem; font-weight: 500; }
+  .ed-post-meta { font-size: 0.75rem; color: var(--faint); }
+  .ed-post-acts { display: flex; gap: 0.3rem; flex-shrink: 0; }
+  .btn-danger { color: #EB5757; }
+  .btn-danger:hover { background: rgba(235, 87, 87, 0.1); color: #EB5757; }
 
   .ed-doc { flex: 1; padding: 3rem 3.5rem 8rem; }
 
@@ -275,6 +305,7 @@ const today = new Date().toISOString().slice(0, 10);
   import Placeholder from '@tiptap/extension-placeholder';
   import Link from '@tiptap/extension-link';
   import TurndownService from 'turndown';
+  import { marked } from 'marked';
   import { slugify } from '../lib/slug';
 
   const REPO = { owner: 'tny-me', name: 'Blog', branch: 'main' };
@@ -297,6 +328,9 @@ const today = new Date().toISOString().slice(0, 10);
     tags: $<HTMLInputElement>('ed-tags'),
     desc: $<HTMLInputElement>('ed-desc'),
     draft: $<HTMLInputElement>('ed-draft'),
+    listBtn: $('ed-list'),
+    listPanel: $('ed-listpanel'),
+    posts: $('ed-posts'),
     slash: $('ed-slash'),
     toast: $('ed-toast'),
     file: $<HTMLInputElement>('ed-file'),
@@ -639,6 +673,189 @@ const today = new Date().toISOString().slice(0, 10);
     return lines.join('\n');
   }
 
+  // ── Entradas publicadas: listar, editar, eliminar ─────────
+  const DIR = 'src/content/posts';
+
+  /** Ruta de la entrada que se esta editando, si se cargo una existente. */
+  let editingPath: string | null = null;
+
+  function fromBase64(b64: string): string {
+    const bin = atob(b64.replace(/\s/g, ''));
+    return new TextDecoder().decode(Uint8Array.from(bin, (c) => c.charCodeAt(0)));
+  }
+
+  /** Lector del frontmatter, acotado a los campos que escribe este editor. */
+  function parseFrontmatter(md: string): { data: Record<string, any>; body: string } {
+    const m = /^---\r?\n([\s\S]*?)\r?\n---\r?\n?/.exec(md);
+    if (!m) return { data: {}, body: md };
+    const data: Record<string, any> = {};
+    for (const linea of m[1].split(/\r?\n/)) {
+      const par = /^([A-Za-z_]+):\s*(.*)$/.exec(linea);
+      if (!par) continue;
+      const valor = par[2].trim();
+      if (valor.startsWith('[') && valor.endsWith(']')) {
+        data[par[1]] = valor.slice(1, -1).split(',')
+          .map((x) => x.trim().replace(/^["']|["']$/g, ''))
+          .filter(Boolean);
+      } else {
+        data[par[1]] = valor.replace(/^["']|["']$/g, '').replace(/\\"/g, '"');
+      }
+    }
+    return { data, body: md.slice(m[0].length) };
+  }
+
+  async function deleteByPath(path: string, message: string) {
+    const probe = await gh(`contents/${path}?ref=${REPO.branch}`);
+    if (!probe.ok) throw new Error(await ghError(probe));
+    const sha = (await probe.json()).sha;
+    const res = await gh(`contents/${path}`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message, sha, branch: REPO.branch }),
+    });
+    if (!res.ok) throw new Error(await ghError(res));
+  }
+
+  async function cargarEntradas() {
+    if (!getToken()) {
+      els.posts.innerHTML = '<p class="ed-note">Guarda un token en «Acceso» para ver tus entradas.</p>';
+      return;
+    }
+    els.posts.innerHTML = '<p class="ed-note">Cargando…</p>';
+    try {
+      const res = await gh(`contents/${DIR}?ref=${REPO.branch}`);
+      if (!res.ok) throw new Error(await ghError(res));
+      const archivos = (await res.json()).filter((f: any) => f.name.endsWith('.md'));
+
+      const entradas = await Promise.all(archivos.map(async (f: any) => {
+        const uno = await gh(`contents/${f.path}?ref=${REPO.branch}`);
+        const md = uno.ok ? fromBase64((await uno.json()).content) : '';
+        const { data } = parseFrontmatter(md);
+        return { path: f.path, name: f.name, data };
+      }));
+
+      entradas.sort((a, b) => String(b.data.date ?? '').localeCompare(String(a.data.date ?? '')));
+      pintarEntradas(entradas);
+    } catch (err) {
+      els.posts.innerHTML = `<p class="ed-note">No se pudieron cargar: ${(err as Error).message}</p>`;
+    }
+  }
+
+  function pintarEntradas(entradas: Array<{ path: string; name: string; data: any }>) {
+    els.posts.innerHTML = '';
+    if (entradas.length === 0) {
+      els.posts.innerHTML = '<p class="ed-note">No hay entradas todavía.</p>';
+      return;
+    }
+    for (const entrada of entradas) {
+      const fila = document.createElement('div');
+      fila.className = 'ed-post';
+
+      const main = document.createElement('div');
+      main.className = 'ed-post-main';
+      const titulo = document.createElement('div');
+      titulo.className = 'ed-post-title';
+      titulo.textContent = entrada.data.title ?? entrada.name;
+      const meta = document.createElement('div');
+      meta.className = 'ed-post-meta';
+      meta.textContent = [
+        entrada.data.date,
+        entrada.data.category,
+        entrada.data.draft === 'true' || entrada.data.draft === true ? 'borrador' : null,
+      ].filter(Boolean).join(' · ');
+      main.append(titulo, meta);
+
+      const acts = document.createElement('div');
+      acts.className = 'ed-post-acts';
+
+      const ver = document.createElement('a');
+      ver.className = 'btn';
+      ver.textContent = 'Ver';
+      ver.target = '_blank';
+      ver.rel = 'noopener';
+      ver.href = `/posts/${entrada.name.replace(/\.md$/, '')}`;
+
+      const editar = document.createElement('button');
+      editar.className = 'btn';
+      editar.type = 'button';
+      editar.textContent = 'Editar';
+      editar.addEventListener('click', () => abrirEntrada(entrada.path));
+
+      const borrar = document.createElement('button');
+      borrar.className = 'btn btn-danger';
+      borrar.type = 'button';
+      borrar.textContent = 'Eliminar';
+      borrar.addEventListener('click', () => borrarEntrada(entrada.path, titulo.textContent ?? ''));
+
+      acts.append(ver, editar, borrar);
+      fila.append(main, acts);
+      els.posts.appendChild(fila);
+    }
+  }
+
+  async function abrirEntrada(path: string) {
+    try {
+      const res = await gh(`contents/${path}?ref=${REPO.branch}`);
+      if (!res.ok) throw new Error(await ghError(res));
+      const { data, body } = parseFrontmatter(fromBase64((await res.json()).content));
+
+      els.titulo.value = data.title ?? '';
+      if (data.date) els.fecha.value = String(data.date).slice(0, 10);
+      els.categoria.value = data.category ?? '';
+      els.tags.value = Array.isArray(data.tags) ? data.tags.join(', ') : (data.tags ?? '');
+      els.desc.value = data.description ?? '';
+      els.draft.checked = data.draft === true || data.draft === 'true';
+      editor.commands.setContent(await marked.parse(body));
+
+      editingPath = path;
+      els.crumb.textContent = els.titulo.value || path;
+      els.state.textContent = 'Editando publicada';
+      els.listPanel.hidden = true;
+      saveDraft();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      toast('Entrada cargada. Al publicar se sobrescribe.');
+    } catch (err) {
+      toast(`No se pudo abrir: ${(err as Error).message}`, 9000);
+    }
+  }
+
+  async function borrarEntrada(path: string, titulo: string) {
+    if (!window.confirm(`¿Eliminar «${titulo}»? Desaparecerá del sitio y no se puede deshacer desde aquí.`)) return;
+    try {
+      await deleteByPath(path, `Eliminar entrada: ${titulo}`);
+      if (editingPath === path) nuevaEntrada();
+      toast('Entrada eliminada. El sitio se actualiza en un minuto.');
+      cargarEntradas();
+    } catch (err) {
+      toast(`No se pudo eliminar: ${(err as Error).message}`, 9000);
+    }
+  }
+
+  function nuevaEntrada() {
+    editingPath = null;
+    els.titulo.value = '';
+    els.categoria.value = '';
+    els.tags.value = '';
+    els.desc.value = '';
+    els.draft.checked = false;
+    els.fecha.value = new Date().toISOString().slice(0, 10);
+    editor.commands.setContent('<p></p>');
+    els.crumb.textContent = 'Entrada sin título';
+    els.state.textContent = 'Borrador local';
+    localStorage.removeItem(DRAFT_KEY);
+    els.titulo.focus();
+  }
+
+  els.listBtn.addEventListener('click', () => {
+    els.listPanel.hidden = !els.listPanel.hidden;
+    if (!els.listPanel.hidden) cargarEntradas();
+  });
+
+  $('ed-new').addEventListener('click', () => {
+    if (els.titulo.value.trim() && !window.confirm('Se descartará lo que tienes en pantalla. ¿Seguir?')) return;
+    nuevaEntrada();
+  });
+
   els.publish.addEventListener('click', async () => {
     const titulo = els.titulo.value.trim();
     if (!titulo) return toast('Ponle un título a la entrada antes de publicar.');
@@ -654,12 +871,22 @@ const today = new Date().toISOString().slice(0, 10);
     els.publish.disabled = true;
     els.publish.textContent = 'Publicando…';
     try {
-      await putFile(path, toBase64(markdown), `Publicar entrada: ${titulo}`);
+      const editando = editingPath !== null;
+      await putFile(path, toBase64(markdown), `${editando ? 'Actualizar' : 'Publicar'} entrada: ${titulo}`);
+
+      // Si al editar cambio el titulo, cambia la ruta: se retira la anterior.
+      let renombrada = false;
+      if (editingPath && editingPath !== path) {
+        await deleteByPath(editingPath, `Retirar ruta anterior de: ${titulo}`);
+        renombrada = true;
+      }
+      editingPath = path;
+
       const url = els.draft.checked ? null : `https://tonny.blog/posts/${slug}`;
-      els.state.textContent = 'Publicado';
+      els.state.textContent = editando ? 'Actualizada' : 'Publicado';
       toast(
         url
-          ? `Entrada guardada. En un minuto estará en <a href="${url}" target="_blank" rel="noopener">${url}</a>`
+          ? `Entrada guardada.${renombrada ? ' Cambió el título, así que su dirección también.' : ''} En un minuto estará en <a href="${url}" target="_blank" rel="noopener">${url}</a>`
           : 'Entrada guardada como borrador: no aparecerá en el sitio hasta que desmarques «Borrador».',
         12000
       );

@@ -1,9 +1,13 @@
 ---
 import Shell from '../layouts/Shell.astro';
+
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 ---
 
 <Shell title="Acerca" description="Sobre Antonio Moreno" crumb="Acerca" view="reader">
   <article>
+    <img class="about-photo" src={`${base}assets/img/ia/fotoperfil.png`} alt="Antonio Moreno" width="96" height="96" />
+
     <h1 class="page-title">Sobre mí</h1>
 
     <div class="props">
@@ -11,7 +15,7 @@ import Shell from '../layouts/Shell.astro';
         <span class="prop-key">Autor</span>
         <span class="prop-val">
           <span class="prop-person">
-            <span class="rail-avatar" style="width:20px;height:20px;font-size:0.6rem;">AM</span>
+            <img class="rail-photo" style="width:20px;height:20px;" src={`${base}assets/img/ia/fotoperfil.png`} alt="" />
             Antonio Moreno
           </span>
         </span>
