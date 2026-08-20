@@ -7,13 +7,14 @@ interface Props {
   date: Date;
   type?: string;
   image?: string;
+  tags?: string[];
 }
 
-const { title, description, date, type = 'general', image } = Astro.props;
+const { title, description, date, type = 'general', image, tags = [] } = Astro.props;
 const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 
 const dateFormatted = date.toLocaleDateString('es-MX', {
-  day: 'numeric',
+  day: '2-digit',
   month: 'long',
   year: 'numeric',
 });
@@ -27,25 +28,77 @@ const typeLabels: Record<string, string> = {
 };
 ---
 
-<Layout title={title} description={description} image={image}>
-  <div class="container post-page">
-    <article>
-      <header class="post-header">
-        <p class="post-label">{typeLabels[type] ?? type}</p>
-        <h1 class="post-title-main">{title}</h1>
-        {description && <p class="post-description">{description}</p>}
-        <p class="post-byline">{dateFormatted} · Antonio Moreno</p>
-      </header>
+<Layout title={title} description={description} image={image} topbar={title}>
+  <article class="doc">
+    <h1 class="doc-title">{title}</h1>
 
-      {image && <img class="post-cover" src={image} alt={title} loading="lazy" />}
-
-      <div class="post-body">
-        <slot />
+    <div class="props">
+      <div class="prop">
+        <span class="prop-key">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+            <rect x="2" y="3" width="12" height="11" rx="2" />
+            <path d="M2 6.5h12M5.5 2v2M10.5 2v2" />
+          </svg>
+          Creado
+        </span>
+        <span class="prop-val">{dateFormatted}</span>
       </div>
 
-      <footer class="post-footer">
-        <a href={base} class="back-link">← Volver al inicio</a>
-      </footer>
-    </article>
-  </div>
+      <div class="prop">
+        <span class="prop-key">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+            <circle cx="8" cy="5.5" r="2.75" />
+            <path d="M2.75 13.5a5.25 5.25 0 0 1 10.5 0" />
+          </svg>
+          Autor
+        </span>
+        <span class="prop-val">
+          <span class="prop-author"><span class="prop-avatar">AM</span> Antonio Moreno</span>
+        </span>
+      </div>
+
+      <div class="prop">
+        <span class="prop-key">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+            <circle cx="8" cy="8" r="6" />
+            <path d="M8 4.5V8l2.25 1.5" />
+          </svg>
+          Tipo
+        </span>
+        <span class="prop-val"><span class="prop-status">{typeLabels[type] ?? type}</span></span>
+      </div>
+
+      {tags.length > 0 && (
+        <div class="prop">
+          <span class="prop-key">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+              <path d="M7.4 2H3a1 1 0 0 0-1 1v4.4a1 1 0 0 0 .3.7l6 6a1 1 0 0 0 1.4 0l4.4-4.4a1 1 0 0 0 0-1.4l-6-6A1 1 0 0 0 7.4 2Z" />
+              <circle cx="5.25" cy="5.25" r="0.9" fill="currentColor" stroke="none" />
+            </svg>
+            Etiquetas
+          </span>
+          <span class="prop-val">
+            {tags.map((tag) => <span class="tag">#{tag}</span>)}
+          </span>
+        </div>
+      )}
+    </div>
+
+    {description && (
+      <p class="lede">{description}</p>
+    )}
+
+    <hr class="divider" />
+
+    {image && <img class="doc-cover" src={image} alt={title} loading="lazy" />}
+
+    <div class="body">
+      <slot />
+    </div>
+
+    <footer class="doc-foot">
+      <a href={base} class="back">← Todos los ensayos</a>
+      <span class="label">{dateFormatted}</span>
+    </footer>
+  </article>
 </Layout>
