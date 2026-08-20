@@ -21,7 +21,7 @@ interface Props {
 
 const {
   title,
-  description = 'Ensayos sobre datos, producto y vida — Antonio Moreno',
+  description = 'Ensayos sobre datos, producto y vida — Tonny',
   image,
   activeSlug,
   category,
@@ -61,16 +61,16 @@ const fmt = (d: Date) =>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="canonical" href={canonicalURL} />
-  <title>{title} — Antonio Moreno</title>
+  <title>{title} — Tonny</title>
   <meta name="description" content={description} />
-  <meta property="og:title" content={`${title} — Antonio Moreno`} />
+  <meta property="og:title" content={`${title} — Tonny`} />
   <meta property="og:description" content={description} />
   <meta property="og:url" content={canonicalURL} />
   {image && <meta property="og:image" content={new URL(image, Astro.site)} />}
   <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="alternate" type="application/rss+xml" title="Antonio Moreno" href={`${base}rss.xml`} />
+  <link rel="alternate" type="application/rss+xml" title="Tonny" href={`${base}rss.xml`} />
   <script is:inline>
     const t = localStorage.getItem('theme') ??
       (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
@@ -84,8 +84,8 @@ const fmt = (d: Date) =>
 <body>
   <div class="mobile-bar">
     <a href={base} class="rail-top" style="padding:0;">
-      <span class="rail-mark">A</span>
-      <span class="rail-name">Antonio Moreno</span>
+      <img class="rail-photo" src={`${base}assets/img/ia/photo_perfil_antonio.jpeg`} alt="" width="28" height="28" />
+      <span class="rail-name">Tonny</span>
     </a>
     <nav>
       <a href={base} aria-current={isHere(base) ? 'page' : undefined}>Entradas</a>
@@ -97,8 +97,8 @@ const fmt = (d: Date) =>
     <!-- Panel 1 · navegación y categorías -->
     <aside class="rail">
       <a href={base} class="rail-top">
-        <span class="rail-mark">A</span>
-        <span class="rail-name">Antonio Moreno</span>
+        <img class="rail-photo" src={`${base}assets/img/ia/photo_perfil_antonio.jpeg`} alt="" width="28" height="28" />
+        <span class="rail-name">Tonny</span>
       </a>
 
       <div class="rail-section">
@@ -110,6 +110,9 @@ const fmt = (d: Date) =>
         </a>
         <a href={`${base}editor`} class="rail-item" aria-current={isHere(`${base}editor`) ? 'page' : undefined}>
           <span class="rail-ico">✎</span> Escribir
+        </a>
+        <a href="mailto:anthoniomoreno1@gmail.com" class="rail-item">
+          <span class="rail-ico">✉</span> Correo
         </a>
       </div>
 
@@ -128,19 +131,6 @@ const fmt = (d: Date) =>
         ))}
       </div>
 
-      <div class="rail-section">
-        <p class="rail-heading">Más</p>
-        <a href={`${base}rss.xml`} class="rail-item"><span class="rail-ico">⁂</span> RSS</a>
-        <a href="mailto:anthoniomoreno1@gmail.com" class="rail-item"><span class="rail-ico">✉</span> Correo</a>
-      </div>
-
-      <div class="rail-foot">
-        <img class="rail-photo" src={`${base}assets/img/ia/photo_perfil_antonio.jpeg`} alt="Antonio Moreno" width="28" height="28" />
-        <span class="rail-foot-text">
-          <span class="rail-foot-name">Antonio Moreno</span>
-          <span class="rail-foot-sub">anthoniomoreno1@gmail.com</span>
-        </span>
-      </div>
     </aside>
 
     <!-- Panel 2 · listado de entradas -->

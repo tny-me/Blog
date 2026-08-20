@@ -8,7 +8,7 @@ image: /assets/img/ia/Computer-timeline.png
 tags: ["inteligencia artificial"]
 ---
 
-**Autor**: Antonio Moreno  
+**Autor**: Tonny  
 **Fecha:** Octubre 2022
 
 > A pesar de su breve historia, las computadoras y la IA han transformado fundamentalmente lo que vemos, sabemos y hacemos. Pocas cosas son tan importantes para el futuro del mundo y de nuestras propias vidas como la continuidad de esta historia. Para prever cómo podría ser el futuro, suele ser útil estudiar nuestra historia. Esto es lo que haré en este artículo. Repaso la breve historia de las computadoras y la inteligencia artificial para ver qué podemos esperar del futuro.
