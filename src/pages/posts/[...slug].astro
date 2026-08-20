@@ -16,9 +16,10 @@ const { Content } = await post.render();
 
 <PostLayout
   title={post.data.title}
+  slug={post.slug}
   description={post.data.description}
   date={post.data.date}
-  type={post.data.type}
+  category={post.data.category}
   image={post.data.image}
   tags={post.data.tags}
 >

@@ -1,0 +1,217 @@
+---
+import '../styles/global.css';
+import { getCollection } from 'astro:content';
+import { slugify, categoryColor } from '../lib/slug';
+
+interface Props {
+  title: string;
+  description?: string;
+  image?: string;
+  /** Entrada abierta en el panel de lectura, si la hay. */
+  activeSlug?: string;
+  /** Filtra el panel de la lista a una sola categoría. */
+  category?: string;
+  /** Encabezado del panel de la lista. */
+  listTitle?: string;
+  /** Texto de la barra del panel de lectura. */
+  crumb?: string;
+  /** En móvil se muestra un solo panel: el de lista o el de lectura. */
+  view?: 'list' | 'reader';
+}
+
+const {
+  title,
+  description = 'Ensayos sobre datos, producto y vida — Antonio Moreno',
+  image,
+  activeSlug,
+  category,
+  listTitle,
+  crumb,
+  view = 'reader',
+} = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+const here = Astro.url.pathname.replace(/\/$/, '');
+const isHere = (path: string) => here === path.replace(/\/$/, '');
+
+const all = (await getCollection('posts', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.date.getTime() - a.data.date.getTime()
+);
+
+// Las categorías salen de las entradas: al publicar una nueva, aparece sola.
+const categories = [...new Set(all.map((p) => p.data.category))]
+  .map((name) => ({
+    name,
+    slug: slugify(name),
+    color: categoryColor(name),
+    count: all.filter((p) => p.data.category === name).length,
+  }))
+  .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+
+const listed = category ? all.filter((p) => p.data.category === category) : all;
+
+const fmt = (d: Date) =>
+  d.toLocaleDateString('es-MX', { day: 'numeric', month: 'short' });
+---
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="canonical" href={canonicalURL} />
+  <title>{title} — Antonio Moreno</title>
+  <meta name="description" content={description} />
+  <meta property="og:title" content={`${title} — Antonio Moreno`} />
+  <meta property="og:description" content={description} />
+  <meta property="og:url" content={canonicalURL} />
+  {image && <meta property="og:image" content={new URL(image, Astro.site)} />}
+  <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="alternate" type="application/rss+xml" title="Antonio Moreno" href={`${base}rss.xml`} />
+  <script is:inline>
+    const t = localStorage.getItem('theme') ??
+      (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    document.documentElement.setAttribute('data-theme', t);
+  </script>
+</head>
+
+<body>
+  <div class="mobile-bar">
+    <a href={base} class="rail-top" style="padding:0;">
+      <span class="rail-mark">A</span>
+      <span class="rail-name">Antonio Moreno</span>
+    </a>
+    <nav>
+      <a href={base} aria-current={isHere(base) ? 'page' : undefined}>Entradas</a>
+      <a href={`${base}about`} aria-current={isHere(`${base}about`) ? 'page' : undefined}>Acerca</a>
+    </nav>
+  </div>
+
+  <div class="shell" data-view={view}>
+    <!-- Panel 1 · navegación y categorías -->
+    <aside class="rail">
+      <a href={base} class="rail-top">
+        <span class="rail-mark">A</span>
+        <span class="rail-name">Antonio Moreno</span>
+      </a>
+
+      <div class="rail-section">
+        <a href={base} class="rail-item" aria-current={isHere(base) ? 'page' : undefined}>
+          <span class="rail-ico">⌂</span> Inicio
+        </a>
+        <a href={`${base}about`} class="rail-item" aria-current={isHere(`${base}about`) ? 'page' : undefined}>
+          <span class="rail-ico">◔</span> Acerca
+        </a>
+        <a href={`${base}editor`} class="rail-item" aria-current={isHere(`${base}editor`) ? 'page' : undefined}>
+          <span class="rail-ico">✎</span> Escribir
+        </a>
+      </div>
+
+      <div class="rail-section">
+        <p class="rail-heading">Categorías</p>
+        {categories.map((cat) => (
+          <a
+            href={`${base}categoria/${cat.slug}`}
+            class="rail-item"
+            aria-current={isHere(`${base}categoria/${cat.slug}`) ? 'page' : undefined}
+          >
+            <span class="rail-swatch" style={`background:${cat.color}`}></span>
+            {cat.name}
+            <span class="rail-count">{cat.count}</span>
+          </a>
+        ))}
+      </div>
+
+      <div class="rail-section">
+        <p class="rail-heading">Más</p>
+        <a href={`${base}rss.xml`} class="rail-item"><span class="rail-ico">⁂</span> RSS</a>
+        <a href="mailto:anthoniomoreno1@gmail.com" class="rail-item"><span class="rail-ico">✉</span> Correo</a>
+      </div>
+
+      <div class="rail-foot">
+        <span class="rail-avatar">AM</span>
+        <span class="rail-foot-text">
+          <span class="rail-foot-name">Antonio Moreno</span>
+          <span class="rail-foot-sub">anthoniomoreno1@gmail.com</span>
+        </span>
+      </div>
+    </aside>
+
+    <!-- Panel 2 · listado de entradas -->
+    <section class="list">
+      <div class="list-bar">
+        <span class="list-bar-title">
+          <span>{listTitle ?? 'Todas las entradas'}</span>
+        </span>
+        <span class="pill">{listed.length}</span>
+      </div>
+      <div class="list-scroll">
+        {listed.length === 0 && <p class="list-empty">Todavía no hay entradas aquí.</p>}
+        {listed.map((post) => (
+          <a
+            href={`${base}posts/${post.slug}`}
+            class="entry"
+            aria-current={activeSlug === post.slug ? 'page' : undefined}
+          >
+            <span class="entry-top">
+              <span class="entry-title">{post.data.title}</span>
+              <span class="entry-date">{fmt(post.data.date)}</span>
+            </span>
+            <span class="entry-cat">
+              <span class="rail-swatch" style={`background:${categoryColor(post.data.category)}`}></span>
+              {post.data.category}
+            </span>
+            {post.data.description && <span class="entry-excerpt">{post.data.description}</span>}
+            {post.data.tags && post.data.tags.length > 0 && (
+              <span class="entry-tags">
+                {post.data.tags.slice(0, 3).map((tag) => <span class="tag">{tag}</span>)}
+              </span>
+            )}
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- Panel 3 · lectura -->
+    <section class="reader">
+      <div class="reader-bar">
+        <span class="reader-crumb">
+          {view === 'reader' && (
+            <a href={base} class="btn" data-back style="display:none;">←</a>
+          )}
+          <span>{crumb ?? title}</span>
+        </span>
+        <span class="reader-acts">
+          <button class="btn" id="theme-toggle" type="button">Tema</button>
+        </span>
+      </div>
+      <div class="page">
+        <div class="page-inner">
+          <slot />
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+
+<script>
+  const root = document.documentElement;
+  const btn = document.getElementById('theme-toggle');
+  btn?.addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+
+  // En móvil, el panel de lectura necesita una vuelta explícita al listado.
+  const back = document.querySelector('[data-back]') as HTMLElement | null;
+  if (back) {
+    const sync = () => { back.style.display = window.innerWidth <= 900 ? '' : 'none'; };
+    sync();
+    window.addEventListener('resize', sync);
+  }
+</script>
+</html>

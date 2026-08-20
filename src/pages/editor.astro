@@ -1,0 +1,674 @@
+---
+import '../styles/global.css';
+import { getCollection } from 'astro:content';
+
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+const posts = await getCollection('posts');
+const categories = [...new Set(posts.map((p) => p.data.category))].sort();
+const today = new Date().toISOString().slice(0, 10);
+---
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Escribir — Antonio Moreno</title>
+  <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <script is:inline>
+    const t = localStorage.getItem('theme') ??
+      (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    document.documentElement.setAttribute('data-theme', t);
+  </script>
+</head>
+
+<body>
+  <div class="ed-shell">
+    <header class="ed-bar">
+      <span class="reader-crumb">
+        <a href={base} class="btn">←</a>
+        <span id="ed-crumb">Entrada sin título</span>
+        <span class="pill" id="ed-state">Borrador local</span>
+      </span>
+      <span class="reader-acts">
+        <button class="btn" id="ed-key" type="button">Acceso</button>
+        <button class="btn btn-primary" id="ed-publish" type="button">Publicar</button>
+      </span>
+    </header>
+
+    <!-- Panel de acceso: el token vive solo en este navegador -->
+    <div class="ed-panel" id="ed-keypanel" hidden>
+      <p class="eyebrow">Acceso de publicación</p>
+      <p class="ed-note">
+        Para publicar, el editor escribe el archivo de la entrada en tu repositorio de
+        GitHub. Necesita un <strong>token de acceso personal</strong> con permiso de
+        contenido sobre <code>tny-me/Blog</code>. Se guarda únicamente en este
+        navegador (<code>localStorage</code>) y nunca viaja a otro sitio que no sea
+        <code>api.github.com</code>.
+      </p>
+      <div class="ed-keyrow">
+        <input type="password" id="ed-token" placeholder="github_pat_..." autocomplete="off" spellcheck="false" />
+        <button class="btn btn-primary" id="ed-save-token" type="button">Guardar</button>
+        <button class="btn" id="ed-clear-token" type="button">Borrar</button>
+      </div>
+      <p class="ed-note" id="ed-keystate"></p>
+      <p class="ed-note">
+        <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">
+          Crear un token de alcance limitado →
+        </a>
+        Elige <em>Only select repositories → Blog</em> y en permisos
+        <em>Repository permissions → Contents → Read and write</em>.
+      </p>
+    </div>
+
+    <main class="ed-doc">
+      <div class="page-inner">
+        <input class="ed-title" id="ed-titulo" placeholder="Sin título" autocomplete="off" />
+
+        <div class="props ed-props">
+          <label class="prop">
+            <span class="prop-key">Fecha</span>
+            <span class="prop-val"><input type="date" id="ed-fecha" value={today} /></span>
+          </label>
+          <label class="prop">
+            <span class="prop-key">Categoría</span>
+            <span class="prop-val">
+              <input id="ed-categoria" list="ed-cats" placeholder="Ciencia de datos" autocomplete="off" />
+              <datalist id="ed-cats">
+                {categories.map((c) => <option value={c}></option>)}
+              </datalist>
+            </span>
+          </label>
+          <label class="prop">
+            <span class="prop-key">Etiquetas</span>
+            <span class="prop-val"><input id="ed-tags" placeholder="separadas, por, comas" autocomplete="off" /></span>
+          </label>
+          <label class="prop">
+            <span class="prop-key">Resumen</span>
+            <span class="prop-val"><input id="ed-desc" placeholder="Una línea que aparece en el listado" autocomplete="off" /></span>
+          </label>
+          <label class="prop">
+            <span class="prop-key">Borrador</span>
+            <span class="prop-val">
+              <input type="checkbox" id="ed-draft" />
+              <span class="ed-hint">Si se marca, se guarda pero no se publica en el sitio.</span>
+            </span>
+          </label>
+        </div>
+
+        <hr class="divider" />
+
+        <div id="ed-body" class="body"></div>
+
+        <p class="ed-hint ed-foot-hint">
+          Escribe <kbd>/</kbd> para insertar títulos, listas, citas, código o imágenes.
+          También funcionan los atajos de Markdown: <kbd># </kbd>, <kbd>- </kbd>,
+          <kbd>&gt; </kbd>, <kbd>```</kbd>.
+        </p>
+      </div>
+    </main>
+  </div>
+
+  <!-- Menú de barra inclinada -->
+  <div class="ed-slash" id="ed-slash" hidden></div>
+
+  <div class="ed-toast" id="ed-toast" hidden></div>
+
+  <input type="file" id="ed-file" accept="image/*" hidden />
+</body>
+
+<style is:global>
+  .ed-shell { display: flex; flex-direction: column; min-height: 100vh; }
+
+  .ed-bar {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.65rem 1.25rem;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .ed-panel {
+    border-bottom: 1px solid var(--border);
+    background: var(--rail);
+    padding: 1.1rem 1.25rem;
+  }
+  .ed-panel .eyebrow { display: block; margin-bottom: 0.5rem; }
+  .ed-note { font-size: 0.8125rem; color: var(--muted); line-height: 1.6; max-width: 70ch; margin-bottom: 0.6rem; }
+  .ed-note code { font-family: var(--mono); font-size: 0.85em; background: var(--hover); border-radius: 3px; padding: 0.05em 0.3em; }
+  .ed-note a { color: var(--blue); }
+  .ed-keyrow { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 0.6rem; }
+  .ed-keyrow input {
+    flex: 1;
+    min-width: 260px;
+    font: inherit;
+    font-size: 0.875rem;
+    color: var(--text);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.35rem 0.6rem;
+  }
+
+  .ed-doc { flex: 1; padding: 3rem 3.5rem 8rem; }
+
+  .ed-title {
+    width: 100%;
+    font: inherit;
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    background: none;
+    border: none;
+    outline: none;
+    margin-bottom: 1.25rem;
+  }
+  .ed-title::placeholder { color: var(--faint); }
+
+  .ed-props .prop { cursor: text; }
+  .ed-props input[type="text"], .ed-props input[type="date"], .ed-props input:not([type]) {
+    font: inherit;
+    font-size: 0.875rem;
+    color: var(--text);
+    background: none;
+    border: none;
+    outline: none;
+    width: 100%;
+    padding: 0.15rem 0.25rem;
+    border-radius: 3px;
+  }
+  .ed-props input:focus { background: var(--hover); }
+  .ed-props input::placeholder { color: var(--faint); }
+  .ed-hint { font-size: 0.75rem; color: var(--faint); }
+  .ed-foot-hint { margin-top: 2rem; }
+  .ed-hint kbd, .ed-foot-hint kbd {
+    font-family: var(--mono);
+    font-size: 0.9em;
+    background: var(--hover);
+    border-radius: 3px;
+    padding: 0.05em 0.3em;
+  }
+
+  /* Lienzo de escritura */
+  .ProseMirror { outline: none; min-height: 45vh; }
+  .ProseMirror p.is-editor-empty:first-child::before {
+    content: attr(data-placeholder);
+    color: var(--faint);
+    float: left;
+    height: 0;
+    pointer-events: none;
+  }
+
+  /* Menú de la barra inclinada */
+  .ed-slash {
+    position: fixed;
+    z-index: 60;
+    width: 260px;
+    max-height: 300px;
+    overflow-y: auto;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
+    padding: 0.3rem;
+  }
+  .ed-slash-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    width: 100%;
+    text-align: left;
+    padding: 0.4rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.875rem;
+  }
+  .ed-slash-item[data-active="true"] { background: var(--hover); }
+  .ed-slash-ico {
+    width: 26px;
+    height: 26px;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 0.8rem;
+    color: var(--muted);
+    flex-shrink: 0;
+  }
+  .ed-slash-sub { font-size: 0.75rem; color: var(--faint); }
+
+  .ed-toast {
+    position: fixed;
+    left: 50%;
+    bottom: 1.5rem;
+    transform: translateX(-50%);
+    z-index: 70;
+    max-width: min(90vw, 520px);
+    background: var(--text);
+    color: var(--bg);
+    font-size: 0.875rem;
+    border-radius: 6px;
+    padding: 0.6rem 0.9rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  }
+  .ed-toast a { color: inherit; text-decoration: underline; }
+
+  @media (max-width: 900px) {
+    .ed-doc { padding: 1.75rem 1.25rem 6rem; }
+    .ed-title { font-size: 1.875rem; }
+    .ed-props .prop { grid-template-columns: 1fr; }
+  }
+</style>
+
+<script>
+  import { Editor } from '@tiptap/core';
+  import StarterKit from '@tiptap/starter-kit';
+  import Placeholder from '@tiptap/extension-placeholder';
+  import Link from '@tiptap/extension-link';
+  import TurndownService from 'turndown';
+  import { slugify } from '../lib/slug';
+
+  const REPO = { owner: 'tny-me', name: 'Blog', branch: 'main' };
+  const TOKEN_KEY = 'gh_pat';
+  const DRAFT_KEY = 'editor_draft';
+
+  const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
+
+  const els = {
+    crumb: $('ed-crumb'),
+    state: $('ed-state'),
+    keyBtn: $('ed-key'),
+    keyPanel: $('ed-keypanel'),
+    keyState: $('ed-keystate'),
+    token: $<HTMLInputElement>('ed-token'),
+    publish: $<HTMLButtonElement>('ed-publish'),
+    titulo: $<HTMLInputElement>('ed-titulo'),
+    fecha: $<HTMLInputElement>('ed-fecha'),
+    categoria: $<HTMLInputElement>('ed-categoria'),
+    tags: $<HTMLInputElement>('ed-tags'),
+    desc: $<HTMLInputElement>('ed-desc'),
+    draft: $<HTMLInputElement>('ed-draft'),
+    slash: $('ed-slash'),
+    toast: $('ed-toast'),
+    file: $<HTMLInputElement>('ed-file'),
+  };
+
+  // ── Avisos ────────────────────────────────────────────────
+  let toastTimer: number | undefined;
+  function toast(html: string, ms = 5000) {
+    els.toast.innerHTML = html;
+    els.toast.hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = window.setTimeout(() => { els.toast.hidden = true; }, ms);
+  }
+
+  // ── Token ─────────────────────────────────────────────────
+  const getToken = () => localStorage.getItem(TOKEN_KEY) ?? '';
+
+  function paintKeyState() {
+    const has = !!getToken();
+    els.keyState.textContent = has
+      ? 'Hay un token guardado en este navegador.'
+      : 'Sin token: puedes escribir y guardar el borrador, pero no publicar.';
+    els.keyBtn.textContent = has ? 'Acceso ✓' : 'Acceso';
+  }
+
+  els.keyBtn.addEventListener('click', () => { els.keyPanel.hidden = !els.keyPanel.hidden; });
+
+  $('ed-save-token').addEventListener('click', () => {
+    const value = els.token.value.trim();
+    if (!value) return;
+    localStorage.setItem(TOKEN_KEY, value);
+    els.token.value = '';
+    paintKeyState();
+    toast('Token guardado en este navegador.');
+  });
+
+  $('ed-clear-token').addEventListener('click', () => {
+    localStorage.removeItem(TOKEN_KEY);
+    paintKeyState();
+    toast('Token borrado de este navegador.');
+  });
+
+  paintKeyState();
+
+  // ── Editor ────────────────────────────────────────────────
+  const editor = new Editor({
+    element: $('ed-body'),
+    extensions: [
+      StarterKit.configure({ heading: { levels: [1, 2, 3] } }),
+      Link.configure({ openOnClick: false }),
+      Placeholder.configure({ placeholder: 'Escribe, o pulsa "/" para insertar un bloque…' }),
+    ],
+    content: '<p></p>',
+    onUpdate: () => { saveDraft(); refreshSlash(); },
+    onSelectionUpdate: () => refreshSlash(),
+  });
+
+  // ── Borrador local ────────────────────────────────────────
+  let saveTimer: number | undefined;
+  function saveDraft() {
+    clearTimeout(saveTimer);
+    saveTimer = window.setTimeout(() => {
+      localStorage.setItem(DRAFT_KEY, JSON.stringify({
+        titulo: els.titulo.value,
+        fecha: els.fecha.value,
+        categoria: els.categoria.value,
+        tags: els.tags.value,
+        desc: els.desc.value,
+        draft: els.draft.checked,
+        html: editor.getHTML(),
+      }));
+      els.state.textContent = 'Borrador guardado';
+      els.crumb.textContent = els.titulo.value.trim() || 'Entrada sin título';
+    }, 400);
+  }
+
+  function loadDraft() {
+    const raw = localStorage.getItem(DRAFT_KEY);
+    if (!raw) return;
+    try {
+      const d = JSON.parse(raw);
+      els.titulo.value = d.titulo ?? '';
+      if (d.fecha) els.fecha.value = d.fecha;
+      els.categoria.value = d.categoria ?? '';
+      els.tags.value = d.tags ?? '';
+      els.desc.value = d.desc ?? '';
+      els.draft.checked = !!d.draft;
+      if (d.html) editor.commands.setContent(d.html);
+      els.crumb.textContent = els.titulo.value.trim() || 'Entrada sin título';
+      els.state.textContent = 'Borrador recuperado';
+    } catch {
+      /* borrador ilegible: se ignora y se empieza en limpio */
+    }
+  }
+
+  [els.titulo, els.fecha, els.categoria, els.tags, els.desc, els.draft]
+    .forEach((el) => el.addEventListener('input', saveDraft));
+
+  els.titulo.addEventListener('input', () => {
+    els.crumb.textContent = els.titulo.value.trim() || 'Entrada sin título';
+  });
+
+  loadDraft();
+
+  // ── Menú de la barra inclinada ────────────────────────────
+  type Cmd = { key: string; label: string; sub: string; ico: string; run: () => void };
+
+  const chain = () => editor.chain().focus();
+
+  const COMMANDS: Cmd[] = [
+    { key: 'texto parrafo', label: 'Texto', sub: 'Párrafo normal', ico: '¶', run: () => chain().setParagraph().run() },
+    { key: 'titulo 1 h1 encabezado', label: 'Título 1', sub: 'Sección grande', ico: 'H1', run: () => chain().toggleHeading({ level: 1 }).run() },
+    { key: 'titulo 2 h2 encabezado', label: 'Título 2', sub: 'Sección mediana', ico: 'H2', run: () => chain().toggleHeading({ level: 2 }).run() },
+    { key: 'titulo 3 h3 encabezado', label: 'Título 3', sub: 'Sección pequeña', ico: 'H3', run: () => chain().toggleHeading({ level: 3 }).run() },
+    { key: 'lista vinetas bullet', label: 'Lista con viñetas', sub: 'Puntos sueltos', ico: '•', run: () => chain().toggleBulletList().run() },
+    { key: 'lista numerada orden', label: 'Lista numerada', sub: 'Pasos en orden', ico: '1.', run: () => chain().toggleOrderedList().run() },
+    { key: 'cita quote', label: 'Cita', sub: 'Texto destacado', ico: '❝', run: () => chain().toggleBlockquote().run() },
+    { key: 'codigo code bloque', label: 'Código', sub: 'Bloque monoespaciado', ico: '{}', run: () => chain().toggleCodeBlock().run() },
+    { key: 'divisor separador linea', label: 'Divisor', sub: 'Línea horizontal', ico: '—', run: () => chain().setHorizontalRule().run() },
+    { key: 'imagen foto subir', label: 'Imagen', sub: 'Subir desde tu equipo', ico: '🖼', run: () => els.file.click() },
+    { key: 'enlace link url', label: 'Enlace', sub: 'Añadir una liga', ico: '↗', run: promptLink },
+  ];
+
+  let slashOpen = false;
+  let slashFrom = 0;
+  let slashItems: Cmd[] = [];
+  let slashIndex = 0;
+
+  /** Texto escrito tras la barra inclinada, si el cursor sigue dentro de ella. */
+  function slashQuery(): { from: number; query: string } | null {
+    const { state } = editor;
+    const { from, empty } = state.selection;
+    if (!empty) return null;
+    const start = state.doc.resolve(from).start();
+    const text = state.doc.textBetween(start, from, '\n', '\0');
+    const match = /\/([\p{L}\p{N} ]{0,24})$/u.exec(text);
+    if (!match) return null;
+    return { from: from - match[0].length, query: match[1].trim().toLowerCase() };
+  }
+
+  const norm = (s: string) =>
+    s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+
+  function refreshSlash() {
+    const hit = slashQuery();
+    if (!hit) return closeSlash();
+
+    const q = norm(hit.query);
+    slashItems = q
+      ? COMMANDS.filter((c) => norm(c.key + ' ' + c.label).includes(q))
+      : COMMANDS;
+
+    if (slashItems.length === 0) return closeSlash();
+
+    slashFrom = hit.from;
+    slashIndex = 0;
+    slashOpen = true;
+    paintSlash();
+  }
+
+  function paintSlash() {
+    els.slash.innerHTML = '';
+    slashItems.forEach((cmd, i) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'ed-slash-item';
+      b.dataset.active = String(i === slashIndex);
+      b.innerHTML =
+        `<span class="ed-slash-ico">${cmd.ico}</span>` +
+        `<span><span>${cmd.label}</span><br><span class="ed-slash-sub">${cmd.sub}</span></span>`;
+      b.addEventListener('mousedown', (e) => { e.preventDefault(); pick(i); });
+      els.slash.appendChild(b);
+    });
+
+    const coords = editor.view.coordsAtPos(editor.state.selection.from);
+    const top = Math.min(coords.bottom + 6, window.innerHeight - 320);
+    els.slash.style.left = `${Math.min(coords.left, window.innerWidth - 280)}px`;
+    els.slash.style.top = `${Math.max(top, 8)}px`;
+    els.slash.hidden = false;
+  }
+
+  function closeSlash() {
+    slashOpen = false;
+    els.slash.hidden = true;
+  }
+
+  function pick(i: number) {
+    const cmd = slashItems[i];
+    if (!cmd) return;
+    editor.chain().focus().deleteRange({ from: slashFrom, to: editor.state.selection.from }).run();
+    closeSlash();
+    cmd.run();
+  }
+
+  editor.view.dom.addEventListener('keydown', (e: KeyboardEvent) => {
+    if (!slashOpen) return;
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      slashIndex = (slashIndex + 1) % slashItems.length;
+      paintSlash();
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      slashIndex = (slashIndex - 1 + slashItems.length) % slashItems.length;
+      paintSlash();
+    } else if (e.key === 'Enter' || e.key === 'Tab') {
+      e.preventDefault();
+      pick(slashIndex);
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      closeSlash();
+    }
+  }, true);
+
+  function promptLink() {
+    const url = window.prompt('Dirección del enlace');
+    if (url) chain().setLink({ href: url }).run();
+  }
+
+  // ── Imágenes ──────────────────────────────────────────────
+  els.file.addEventListener('change', async () => {
+    const file = els.file.files?.[0];
+    els.file.value = '';
+    if (!file) return;
+    if (!getToken()) return toast('Para subir imágenes hace falta guardar un token en «Acceso».');
+
+    const name = `${Date.now()}-${slugify(file.name.replace(/\.[^.]+$/, ''))}.${(file.name.split('.').pop() ?? 'png').toLowerCase()}`;
+    const path = `public/assets/img/${name}`;
+    toast('Subiendo imagen…', 20000);
+    try {
+      const b64 = await fileToBase64(file);
+      await putFile(path, b64, `Subir imagen ${name}`);
+      chain().insertContent(`<img src="/assets/img/${name}" alt="${file.name}">`).run();
+      toast('Imagen subida.');
+    } catch (err) {
+      toast(`No se pudo subir la imagen: ${(err as Error).message}`, 9000);
+    }
+  });
+
+  function fileToBase64(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const r = new FileReader();
+      r.onload = () => resolve(String(r.result).split(',')[1]);
+      r.onerror = () => reject(new Error('no se pudo leer el archivo'));
+      r.readAsDataURL(file);
+    });
+  }
+
+  // ── Publicación ───────────────────────────────────────────
+  const turndown = new TurndownService({
+    headingStyle: 'atx',
+    codeBlockStyle: 'fenced',
+    bulletListMarker: '-',
+    emDelimiter: '*',
+  });
+
+  // El editor envuelve el contenido de cada <li> en un <p>, y eso produce listas
+  // sueltas con un renglon en blanco entre puntos. Se quitan esos envoltorios.
+  function tightHtml(html: string): string {
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    doc.querySelectorAll('li > p:only-child').forEach((p) => {
+      p.replaceWith(...Array.from(p.childNodes));
+    });
+    return doc.body.innerHTML;
+  }
+
+  // Vineta con un solo espacio, en lugar de los tres que pone turndown por defecto.
+  turndown.addRule('listItemCompacto', {
+    filter: 'li',
+    replacement: (content, node) => {
+      const texto = content.replace(/^\n+/, '').replace(/\n+$/, '').replace(/\n/g, '\n  ');
+      const padre = node.parentNode as HTMLElement;
+      let marca = '- ';
+      if (padre?.nodeName === 'OL') {
+        const inicio = Number(padre.getAttribute('start') ?? 1);
+        marca = `${inicio + Array.prototype.indexOf.call(padre.children, node)}. `;
+      }
+      return `${marca}${texto}\n`;
+    },
+  });
+
+  /** Base64 seguro para texto con acentos. */
+  function toBase64(text: string): string {
+    const bytes = new TextEncoder().encode(text);
+    let bin = '';
+    bytes.forEach((b) => { bin += String.fromCharCode(b); });
+    return btoa(bin);
+  }
+
+  async function gh(path: string, init?: RequestInit) {
+    const res = await fetch(`https://api.github.com/repos/${REPO.owner}/${REPO.name}/${path}`, {
+      ...init,
+      headers: {
+        Accept: 'application/vnd.github+json',
+        Authorization: `Bearer ${getToken()}`,
+        'X-GitHub-Api-Version': '2022-11-28',
+        ...(init?.headers ?? {}),
+      },
+    });
+    return res;
+  }
+
+  async function putFile(path: string, contentB64: string, message: string) {
+    // Si el archivo ya existe hace falta su sha para sobrescribirlo.
+    let sha: string | undefined;
+    const probe = await gh(`contents/${path}?ref=${REPO.branch}`);
+    if (probe.ok) sha = (await probe.json()).sha;
+    else if (probe.status !== 404) throw new Error(await ghError(probe));
+
+    const res = await gh(`contents/${path}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message, content: contentB64, branch: REPO.branch, sha }),
+    });
+    if (!res.ok) throw new Error(await ghError(res));
+    return res.json();
+  }
+
+  async function ghError(res: Response) {
+    let detail = '';
+    try { detail = (await res.json()).message ?? ''; } catch { /* respuesta sin cuerpo JSON */ }
+    if (res.status === 401) return 'el token no es válido o caducó (401)';
+    if (res.status === 403) return `sin permiso sobre el repositorio (403) ${detail}`;
+    if (res.status === 404) return 'no se encontró el repositorio o el token no lo alcanza (404)';
+    return `${res.status} ${detail}`;
+  }
+
+  function frontmatter(): string {
+    const esc = (s: string) => s.replace(/"/g, '\\"');
+    const tags = els.tags.value.split(',').map((t) => t.trim()).filter(Boolean);
+    const lines = [
+      '---',
+      `title: "${esc(els.titulo.value.trim())}"`,
+      `date: ${els.fecha.value}`,
+      `category: "${esc(els.categoria.value.trim() || 'General')}"`,
+    ];
+    if (els.desc.value.trim()) lines.push(`description: "${esc(els.desc.value.trim())}"`);
+    if (tags.length) lines.push(`tags: [${tags.map((t) => `"${esc(t)}"`).join(', ')}]`);
+    if (els.draft.checked) lines.push('draft: true');
+    lines.push('---', '', '');
+    return lines.join('\n');
+  }
+
+  els.publish.addEventListener('click', async () => {
+    const titulo = els.titulo.value.trim();
+    if (!titulo) return toast('Ponle un título a la entrada antes de publicar.');
+    if (!getToken()) {
+      els.keyPanel.hidden = false;
+      return toast('Guarda primero un token en «Acceso».');
+    }
+
+    const slug = slugify(titulo);
+    const path = `src/content/posts/${slug}.md`;
+    const markdown = frontmatter() + turndown.turndown(tightHtml(editor.getHTML())).trim() + '\n';
+
+    els.publish.disabled = true;
+    els.publish.textContent = 'Publicando…';
+    try {
+      await putFile(path, toBase64(markdown), `Publicar entrada: ${titulo}`);
+      const url = els.draft.checked ? null : `https://tonny.blog/posts/${slug}`;
+      els.state.textContent = 'Publicado';
+      toast(
+        url
+          ? `Entrada guardada. En un minuto estará en <a href="${url}" target="_blank" rel="noopener">${url}</a>`
+          : 'Entrada guardada como borrador: no aparecerá en el sitio hasta que desmarques «Borrador».',
+        12000
+      );
+    } catch (err) {
+      toast(`No se pudo publicar: ${(err as Error).message}`, 10000);
+    } finally {
+      els.publish.disabled = false;
+      els.publish.textContent = 'Publicar';
+    }
+  });
+</script>
+</html>

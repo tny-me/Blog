@@ -7,6 +7,8 @@ const posts = defineCollection({
     date: z.coerce.date(),
     description: z.string().optional(),
     image: z.string().optional(),
+    /** Categoría libre: la que se escriba aquí aparece sola en la barra lateral. */
+    category: z.string().default('General'),
     type: z.enum(['reflexion', 'carta', 'fe', 'espiritu', 'general']).default('general'),
     draft: z.boolean().default(false),
     tags: z.array(z.string()).optional(),
