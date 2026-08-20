@@ -3,7 +3,7 @@ title: "La cronología sobre la Inteligencia Artificial"
 date: 2025-10-17
 description: "A pesar de su breve historia, las computadoras y la IA han transformado fundamentalmente lo que vemos, sabemos y hacemos."
 type: general
-image: /Blog/Blog/assets/img/ia/Computer-timeline.png
+image: /assets/img/ia/Computer-timeline.png
 tags: ["inteligencia artificial"]
 ---
 
@@ -18,13 +18,13 @@ tags: ["inteligencia artificial"]
 
 La rapidez con la que ha cambiado el mundo se hace evidente en lo anticuada que parece hoy incluso la tecnología informática más reciente. Los teléfonos móviles de los años 90 eran enormes ladrillos con diminutas pantallas verdes. Dos décadas antes, el principal sistema de almacenamiento de las computadoras eran las tarjetas perforadas. En poco tiempo, las computadoras evolucionaron tan rápidamente y se convirtieron en parte integral de nuestra vida diaria que es fácil olvidar lo reciente que es esta tecnología. Las primeras computadoras digitales se inventaron hace apenas ocho décadas, como muestra la cronología.
 
-![Computer-timeline](/Blog/assets/img/ia/Computer-timeline.png)
+![Computer-timeline](/assets/img/ia/Computer-timeline.png)
 
 Desde los inicios de esta historia, algunos científicos informáticos se han esforzado por crear máquinas tan inteligentes como los humanos. La siguiente cronología muestra algunos de los sistemas de inteligencia artificial (IA) más destacados y describe sus capacidades.
 
 El primer sistema que menciono es el Teseo. Fue construido por Claude Shannon en 1950 y consistía en un ratón a control remoto capaz de salir de un laberinto y recordar su recorrido. En siete décadas, las capacidades de la inteligencia artificial han avanzado mucho.
 
-![AI timeline](/Blog/assets/img/ia/ai-timeline%20(1).png)
+![AI timeline](/assets/img/ia/ai-timeline%20(1).png)
 
 > **Hitos**
 > 1. **Década de 1940:** Nacen las computadoras digitales.  
@@ -54,7 +54,7 @@ La IA también ha adquirido una capacidad mucho mayor para **generar** imágenes
 
 Tan sorprendente como los avances en imagen es el progreso en **lenguaje**.
 
-![PaLM explicando chistes](/Blog/assets/img/ia/image%20(2).png)
+![PaLM explicando chistes](/assets/img/ia/image%20(2).png)
 
 Las IA que producen lenguaje ya autocompletan correos, traducen textos, transcriben videos, ayudan a estudiantes, generan informes y hasta medios publican periodismo automatizado.
 
