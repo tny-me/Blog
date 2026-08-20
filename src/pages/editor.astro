@@ -133,6 +133,20 @@ const today = new Date().toISOString().slice(0, 10);
     </main>
   </div>
 
+  <!-- Controles de tabla, visibles solo con el cursor dentro de una -->
+  <div class="ed-tabla-bar" id="ed-tabla" hidden>
+    <button class="btn" type="button" data-tabla="addRowBefore" title="Insertar fila encima">↑+</button>
+    <button class="btn" type="button" data-tabla="addRowAfter" title="Insertar fila debajo">↓+</button>
+    <button class="btn" type="button" data-tabla="deleteRow" title="Eliminar la fila">↕−</button>
+    <span class="ed-tabla-sep"></span>
+    <button class="btn" type="button" data-tabla="addColumnBefore" title="Insertar columna a la izquierda">←+</button>
+    <button class="btn" type="button" data-tabla="addColumnAfter" title="Insertar columna a la derecha">→+</button>
+    <button class="btn" type="button" data-tabla="deleteColumn" title="Eliminar la columna">↔−</button>
+    <span class="ed-tabla-sep"></span>
+    <button class="btn" type="button" data-tabla="toggleHeaderRow" title="Poner o quitar el encabezado">Encabezado</button>
+    <button class="btn btn-danger" type="button" data-tabla="deleteTable" title="Eliminar la tabla">Borrar</button>
+  </div>
+
   <!-- Menú de barra inclinada -->
   <div class="ed-slash" id="ed-slash" hidden></div>
 
@@ -283,6 +297,21 @@ const today = new Date().toISOString().slice(0, 10);
     flex-shrink: 0;
   }
   .ed-slash-sub { font-size: 0.75rem; color: var(--faint); }
+
+  .ed-tabla-bar {
+    position: fixed;
+    z-index: 55;
+    display: flex;
+    align-items: center;
+    gap: 0.15rem;
+    padding: 0.25rem;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+  }
+  .ed-tabla-bar .btn { font-size: 0.75rem; padding: 0.2rem 0.4rem; }
+  .ed-tabla-sep { width: 1px; height: 16px; background: var(--border); margin: 0 0.2rem; }
 
   .ed-toast {
     position: fixed;
@@ -920,6 +949,47 @@ const today = new Date().toISOString().slice(0, 10);
     localStorage.removeItem(DRAFT_KEY);
     els.titulo.focus();
   }
+
+  // ── Controles de tabla ────────────────────────────────────
+  const barraTabla = $('ed-tabla');
+
+  barraTabla.addEventListener('mousedown', (e) => {
+    const boton = (e.target as HTMLElement).closest('[data-tabla]');
+    if (!boton) return;
+    e.preventDefault();   // no perder el cursor dentro de la celda
+    const accion = boton.getAttribute('data-tabla')!;
+    (editor.chain().focus() as any)[accion]().run();
+    setTimeout(situarBarraTabla, 0);
+  });
+
+  function situarBarraTabla() {
+    if (!editor.isActive('table')) {
+      barraTabla.hidden = true;
+      return;
+    }
+    const nodo = editor.view.domAtPos(editor.state.selection.from).node;
+    const elemento = (nodo.nodeType === 1 ? nodo : nodo.parentElement) as HTMLElement | null;
+    const tabla = elemento?.closest('table');
+    if (!tabla) {
+      barraTabla.hidden = true;
+      return;
+    }
+    const caja = tabla.getBoundingClientRect();
+    barraTabla.hidden = false;
+    const alto = barraTabla.offsetHeight;
+    // Debajo de la tabla si arriba no cabe.
+    const arriba = caja.top - alto - 8;
+    barraTabla.style.top = `${arriba > 60 ? arriba : caja.bottom + 8}px`;
+    barraTabla.style.left = `${Math.max(8, caja.left)}px`;
+  }
+
+  editor.on('selectionUpdate', situarBarraTabla);
+  editor.on('transaction', situarBarraTabla);
+  // Al pinchar fuera del texto la barra deja de tener sentido. Los botones
+  // conservan el foco (evitan el mousedown), asi que esto no los estorba.
+  editor.on('blur', () => { barraTabla.hidden = true; });
+  window.addEventListener('scroll', situarBarraTabla, true);
+  window.addEventListener('resize', situarBarraTabla);
 
   // ── Vista previa de los diagramas ─────────────────────────
   const salidaDiag = $('ed-diagramas-out');

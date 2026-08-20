@@ -423,9 +423,95 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
 
 .body hr { border: none; border-top: 1px solid var(--border); margin: 1.75rem 0; }
 
-.body table { width: 100%; border-collapse: collapse; font-size: 0.9rem; display: block; overflow-x: auto; }
-.body th, .body td { border: 1px solid var(--border); padding: 0.45rem 0.65rem; text-align: left; }
-.body th { background: var(--rail); font-weight: 600; }
+/* ── Tablas ──
+   El ancho de cada columna lo reparte el navegador segun su contenido; la
+   envoltura permite desplazarla en horizontal antes que apretujarla. */
+.tabla-envoltura {
+  margin: 1.5rem 0;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+}
+
+.body table {
+  width: 100%;
+  min-width: 32rem;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  table-layout: auto;
+}
+
+.body thead th {
+  background: var(--rail);
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  text-align: left;
+  white-space: nowrap;
+  padding: 0.6rem 0.9rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.body tbody td {
+  padding: 0.62rem 0.9rem;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+.body tbody tr:last-child td { border-bottom: none; }
+.body tbody tr:hover { background: var(--hover); }
+
+/* La primera columna hace de etiqueta de la fila. Solo se le impide partirse
+   cuando sus textos son cortos; el script decide y pone la clase. */
+.body tbody td:first-child { font-weight: 500; }
+.body td.sin-partir { white-space: nowrap; }
+
+/* Columnas de cifras: alineadas a la derecha y con digitos de ancho fijo,
+   para que las unidades queden en columna. El guion lo pone el script que
+   analiza cada columna al cargar la entrada. */
+.body th.cifras, .body td.cifras {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* En pantallas estrechas cada fila pasa a ser una ficha con sus rotulos. */
+@media (max-width: 560px) {
+  .tabla-envoltura { border: none; border-radius: 0; overflow: visible; }
+  .body table { min-width: 0; display: block; }
+  .body thead { display: none; }
+  .body tbody { display: block; }
+  .body tbody tr {
+    display: block;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-bottom: 0.6rem;
+    overflow: hidden;
+  }
+  .body tbody tr:hover { background: none; }
+  .body tbody td {
+    display: grid;
+    grid-template-columns: 9rem minmax(0, 1fr);
+    gap: 0.75rem;
+    padding: 0.5rem 0.8rem;
+    border-bottom: 1px solid var(--border);
+    white-space: normal;
+  }
+  .body tbody td:last-child { border-bottom: none; }
+  .body tbody td::before {
+    content: attr(data-col);
+    color: var(--muted);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    padding-top: 0.1rem;
+  }
+  .body td.cifras { text-align: left; }
+}
 
 .callout {
   display: flex;
@@ -609,22 +695,35 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
 }
 .diagrama svg { max-width: 100%; height: auto; margin: 0 auto; }
 
-/* ── Tablas dentro del editor ── */
+/* ── Tablas dentro del editor, con el mismo aspecto que las publicadas ── */
 .ProseMirror table {
   width: 100%;
   border-collapse: collapse;
-  margin: 1.25rem 0;
-  table-layout: fixed;
+  margin: 1.5rem 0;
+  table-layout: auto;
+  font-size: 0.9375rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
   overflow: hidden;
 }
 .ProseMirror th, .ProseMirror td {
-  border: 1px solid var(--border);
-  padding: 0.45rem 0.6rem;
+  padding: 0.62rem 0.9rem;
   vertical-align: top;
   position: relative;
-  min-width: 4rem;
+  min-width: 5rem;
+  border-bottom: 1px solid var(--border);
 }
-.ProseMirror th { background: var(--rail); font-weight: 600; text-align: left; }
+.ProseMirror tr:last-child th, .ProseMirror tr:last-child td { border-bottom: none; }
+.ProseMirror th {
+  background: var(--rail);
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  text-align: left;
+}
+.ProseMirror tbody tr:first-child td { border-top: 1px solid var(--border); }
 .ProseMirror .selectedCell::after {
   content: "";
   position: absolute;
