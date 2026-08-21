@@ -485,6 +485,17 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
 
 /* ── Portada del panel de lectura ── */
 .hero-title { font-size: 2.5rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 0.75rem; }
+
+/* El saludo de la portada es una frase entera: a tamaño de titular resultaria
+   aparatoso, asi que va algo menor y con la medida acotada para que respire. */
+.hero-saludo {
+  font-size: clamp(1.375rem, 2.6vw, 1.75rem);
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: -0.015em;
+  max-width: 32ch;
+  margin-bottom: 0.5rem;
+}
 .hero-sub { font-size: 1.0625rem; color: var(--muted); max-width: 46ch; line-height: 1.6; }
 
 .stats { display: flex; gap: 2.5rem; margin: 2.25rem 0; }
