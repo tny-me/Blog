@@ -5,14 +5,17 @@ import { categoryColor, slugify } from '../lib/slug';
 interface Props {
   title: string;
   slug: string;
+  /** Entradilla propia de la entrada. Solo si existe se muestra el recuadro. */
   description?: string;
+  /** Texto para la vista previa al compartir: el propio o uno sacado del texto. */
+  resumen?: string;
   date: Date;
   category: string;
   image?: string;
   tags?: string[];
 }
 
-const { title, slug, description, date, category, image, tags = [] } = Astro.props;
+const { title, slug, description, resumen, date, category, image, tags = [] } = Astro.props;
 const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 
 const dateFormatted = date.toLocaleDateString('es-MX', {
@@ -24,8 +27,9 @@ const dateFormatted = date.toLocaleDateString('es-MX', {
 
 <Shell
   title={title}
-  description={description}
-  image={image}
+  description={resumen ?? description}
+  image={`${base}og/${slug}.png`}
+  published={date}
   activeSlug={slug}
   crumb={title}
   view="reader"
