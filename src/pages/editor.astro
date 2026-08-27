@@ -345,7 +345,7 @@ const today = new Date().toISOString().slice(0, 10);
   import TurndownService from 'turndown';
   import { gfm } from 'turndown-plugin-gfm';
   import { marked } from 'marked';
-  import { Destacado, Figura, Video, urlDeVideo, PLANTILLA_MAPA, PLANTILLA_FLUJO } from '../lib/editor-blocks';
+  import { Destacado, Figura, Video, urlDeVideo, vistasLocales, PLANTILLA_MAPA, PLANTILLA_FLUJO } from '../lib/editor-blocks';
   import { slugify } from '../lib/slug';
 
   const REPO = { owner: 'tny-me', name: 'Blog', branch: 'main' };
@@ -639,12 +639,29 @@ const today = new Date().toISOString().slice(0, 10);
     try {
       const b64 = await fileToBase64(file);
       await putFile(path, b64, `Subir imagen ${name}`);
-      (chain() as any).ponerFigura({ src: `/assets/img/${name}`, alt: file.name, pie: 'Pie de foto' }).run();
-      toast('Imagen subida. Escribe encima del pie de foto para cambiarlo.', 7000);
+
+      const destino = `/assets/img/${name}`;
+      // Se ve al instante, aunque el sitio tarde un minuto en publicarla.
+      vistasLocales.set(destino, URL.createObjectURL(file));
+
+      // Sin texto de relleno en el pie: se deja vacio, con su indicacion, y el
+      // cursor dentro para escribirlo directamente.
+      (chain() as any).ponerFigura({ src: destino }).run();
+      ponerCursorEnPie();
+      toast('Imagen subida. Escribe el pie de foto, o déjalo vacío.', 7000);
     } catch (err) {
       toast(`No se pudo subir la imagen: ${(err as Error).message}`, 9000);
     }
   });
+
+  /** Deja el cursor dentro del pie de la ultima figura insertada. */
+  function ponerCursorEnPie() {
+    let posicion: number | null = null;
+    editor.state.doc.descendants((nodo, pos) => {
+      if (nodo.type.name === 'figura') posicion = pos + 1;
+    });
+    if (posicion !== null) editor.chain().focus().setTextSelection(posicion).run();
+  }
 
   function fileToBase64(file: File): Promise<string> {
     return new Promise((resolve, reject) => {

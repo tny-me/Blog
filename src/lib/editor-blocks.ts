@@ -66,6 +66,16 @@ export const Destacado = Node.create({
   },
 });
 
+/**
+ * Imágenes recién subidas, mientras el sitio aún no las publica.
+ *
+ * Al subir una imagen, el archivo entra al repositorio al instante, pero su
+ * dirección en el sitio no responde hasta el siguiente despliegue. Para que el
+ * autor la vea de inmediato se guarda aquí una copia local, asociada a la
+ * dirección definitiva; el archivo guardado siempre lleva la dirección buena.
+ */
+export const vistasLocales = new Map<string, string>();
+
 /** Imagen con pie de foto. El pie es el contenido editable del nodo. */
 export const Figura = Node.create({
   name: 'figura',
@@ -102,6 +112,42 @@ export const Figura = Node.create({
       ['img', { src: node.attrs.src, alt: node.attrs.alt, loading: 'lazy' }],
       ['figcaption', 0],
     ];
+  },
+
+  /**
+   * Se dibuja a mano para poder mostrar la copia local sin que eso afecte a lo
+   * que se guarda: la vista es cosa del editor, el atributo sigue intacto.
+   */
+  addNodeView() {
+    return ({ node }: any) => {
+      const figura = document.createElement('figure');
+      figura.className = 'figura';
+
+      const img = document.createElement('img');
+      const pie = document.createElement('figcaption');
+
+      const pintar = (n: any) => {
+        img.src = vistasLocales.get(n.attrs.src) ?? n.attrs.src;
+        img.alt = n.attrs.alt ?? '';
+        figura.classList.remove('sin-publicar');
+      };
+      // Sin copia local y sin publicar todavia: se avisa en vez de dejar el
+      // hueco roto, que es lo que confunde.
+      img.addEventListener('error', () => figura.classList.add('sin-publicar'));
+
+      pintar(node);
+      figura.append(img, pie);
+
+      return {
+        dom: figura,
+        contentDOM: pie,
+        update: (n: any) => {
+          if (n.type.name !== 'figura') return false;
+          pintar(n);
+          return true;
+        },
+      };
+    };
   },
 
   addCommands() {
