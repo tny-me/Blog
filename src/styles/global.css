@@ -700,3 +700,26 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
   background: rgba(35, 131, 226, 0.16);
   pointer-events: none;
 }
+
+/* ── Pie de foto vacío dentro del editor ──
+   Se indica qué escribir sin meter texto de relleno que haya que borrar. */
+.ProseMirror .figura figcaption:empty::before {
+  content: 'Escribe un pie de foto, o déjalo vacío';
+  color: var(--faint);
+  font-size: 0.8125rem;
+}
+
+/* Imagen subida que el sitio aún no publica: se avisa en vez de dejar el hueco
+   roto, que no explica nada. */
+.ProseMirror .figura.sin-publicar img { display: none; }
+.ProseMirror .figura.sin-publicar::before {
+  content: 'Imagen subida. Aparecerá aquí en cuanto el sitio termine de publicarla, en un minuto.';
+  display: block;
+  padding: 1.5rem;
+  border: 1px dashed var(--border);
+  border-radius: 6px;
+  background: var(--rail);
+  color: var(--muted);
+  font-size: 0.875rem;
+  text-align: center;
+}
