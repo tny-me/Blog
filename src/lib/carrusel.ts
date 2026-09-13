@@ -1,9 +1,7 @@
 import satori from 'satori';
 import { Resvg } from '@resvg/resvg-js';
-import { categoryColor } from './slug';
-import {
-  FUENTES, FOTO, TEXTO, APAGADO, TENUE, BORDE, FONDO_SUAVE, ACENTO, BLANCO, AUTOR, DOMINIO,
-} from './marca';
+import { FUENTES } from './marca';
+import { ANCHO, ALTO, temaDe, type Metricas } from './carrusel-temas';
 
 /**
  * Carrusel para redes: el artículo repartido en láminas de 1080×1350.
@@ -12,28 +10,18 @@ import {
  * párrafos, puntos de lista, citas) y se van llenando láminas hasta agotar el
  * alto disponible, cortando siempre entre bloques y nunca a mitad de frase.
  *
+ * Cuánto cabe depende del tema de la categoría —cada uno tiene su tamaño de
+ * letra y sus márgenes—, así que el reparto se hace con sus medidas. El dibujo
+ * vive en `carrusel-temas.ts`.
+ *
  * Lo que no se puede contar con texto —tablas, diagramas, imágenes, vídeos— se
  * omite y se informa de cuántos había, para que el autor decida si le importa.
  */
 
-export const ANCHO = 1080;
-export const ALTO = 1350;
-
-const MARGEN = 84;
-const ANCHO_UTIL = ANCHO - MARGEN * 2;
-
-// Medidas del texto del cuerpo, de las que sale todo el reparto.
-const CUERPO = 36;
-const INTERLINEA = 1.5;
-const ALTO_LINEA = CUERPO * INTERLINEA;
-
-// Alto libre para el texto, descontando cabecera y pie de cada lámina.
-const ALTO_CUERPO = ALTO - MARGEN * 2 - 96 - 120;
-const LINEAS_POR_LAMINA = Math.floor(ALTO_CUERPO / ALTO_LINEA);
+export { ANCHO, ALTO };
 
 /** Ancho medio de un carácter en Inter, como fracción del tamaño de letra. */
 const ANCHO_CARACTER = 0.5;
-const CARACTERES_POR_LINEA = Math.floor(ANCHO_UTIL / (CUERPO * ANCHO_CARACTER));
 
 /**
  * Tope de láminas de contenido.
@@ -152,13 +140,13 @@ export function bloquesDe(markdown: string): { bloques: Bloque[]; omitidos: Omit
 }
 
 /** Cuántas líneas ocupa un bloque, contando su separación con el siguiente. */
-function lineasQueOcupa(bloque: Bloque): number {
+function lineasQueOcupa(bloque: Bloque, caracteresPorLinea: number): number {
   const porLinea: Record<TipoBloque, number> = {
     // Los títulos son más grandes, así que caben menos caracteres por línea.
-    titulo: Math.floor(CARACTERES_POR_LINEA * 0.72),
-    parrafo: CARACTERES_POR_LINEA,
-    lista: CARACTERES_POR_LINEA - 3,
-    cita: CARACTERES_POR_LINEA - 4,
+    titulo: Math.floor(caracteresPorLinea * 0.72),
+    parrafo: caracteresPorLinea,
+    lista: caracteresPorLinea - 3,
+    cita: caracteresPorLinea - 4,
   };
   const separacion: Record<TipoBloque, number> = {
     titulo: 1.4, parrafo: 0.7, lista: 0.35, cita: 1,
@@ -174,21 +162,25 @@ function lineasQueOcupa(bloque: Bloque): number {
 export interface Reparto {
   /** Cada lámina de contenido, con los bloques que le tocan. */
   contenido: Bloque[][];
-  omitidos: Omitidos;
   /** Bloques que no cupieron por el tope de láminas. */
   recortados: number;
 }
 
 /** Reparte los bloques en láminas, cortando siempre entre bloques. */
-export function repartir(bloques: Bloque[]): Reparto {
+export function repartir(bloques: Bloque[], m: Metricas): Reparto {
+  const lineasPorLamina = Math.floor(
+    (ALTO - m.margen * 2 - m.cabecera - m.pie) / (m.cuerpo * m.interlinea),
+  );
+  const caracteresPorLinea = Math.floor((ANCHO - m.margen * 2) / (m.cuerpo * ANCHO_CARACTER));
+
   const contenido: Bloque[][] = [];
   let actual: Bloque[] = [];
   let ocupado = 0;
 
   for (const bloque of bloques) {
-    const coste = lineasQueOcupa(bloque);
+    const coste = lineasQueOcupa(bloque, caracteresPorLinea);
 
-    if (actual.length > 0 && ocupado + coste > LINEAS_POR_LAMINA) {
+    if (actual.length > 0 && ocupado + coste > lineasPorLamina) {
       // Si lo último de la lámina era un título, su texto se iría a la siguiente
       // y el título quedaría solo al final. Se lleva consigo.
       const arrastrado =
@@ -198,7 +190,7 @@ export function repartir(bloques: Bloque[]): Reparto {
 
       contenido.push(actual);
       actual = arrastrado ? [arrastrado] : [];
-      ocupado = arrastrado ? lineasQueOcupa(arrastrado) : 0;
+      ocupado = arrastrado ? lineasQueOcupa(arrastrado, caracteresPorLinea) : 0;
     }
 
     // Un bloque más largo que una lámina entera va solo: se dibujará apretado,
@@ -214,7 +206,7 @@ export function repartir(bloques: Bloque[]): Reparto {
     contenido.length = MAXIMO_CONTENIDO;
   }
 
-  return { contenido, omitidos: { tablas: 0, diagramas: 0, imagenes: 0, videos: 0 }, recortados };
+  return { contenido, recortados };
 }
 
 export interface DatosCarrusel {
@@ -231,139 +223,24 @@ export interface Carrusel {
   contenido: Bloque[][];
   omitidos: Omitidos;
   recortados: number;
+  /** Nombre de la silueta que le toca a la categoría. */
+  tema: string;
 }
 
-export function prepararCarrusel(cuerpo: string): Carrusel {
+export function prepararCarrusel(cuerpo: string, categoria: string): Carrusel {
+  const tema = temaDe(categoria);
   const { bloques, omitidos } = bloquesDe(cuerpo);
-  const reparto = repartir(bloques);
+  const reparto = repartir(bloques, tema.metricas);
   return {
     total: reparto.contenido.length + 2,
     contenido: reparto.contenido,
     omitidos,
     recortados: reparto.recortados,
+    tema: tema.nombre,
   };
 }
 
 // ── Dibujo ──────────────────────────────────────────────────
-
-const marco = (color: string, hijos: any[]) => ({
-  type: 'div',
-  props: {
-    style: {
-      width: `${ANCHO}px`,
-      height: `${ALTO}px`,
-      display: 'flex',
-      flexDirection: 'column',
-      backgroundColor: BLANCO,
-      padding: `${MARGEN}px`,
-      fontFamily: 'Inter',
-      borderTop: `14px solid ${color}`,
-    },
-    children: hijos,
-  },
-});
-
-const cabecera = (categoria: string, color: string, contador?: string) => ({
-  type: 'div',
-  props: {
-    style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '60px' },
-    children: [
-      {
-        type: 'div',
-        props: {
-          style: { display: 'flex', alignItems: 'center', gap: '16px' },
-          children: [
-            { type: 'div', props: { style: { width: '16px', height: '16px', borderRadius: '99px', backgroundColor: color } } },
-            {
-              type: 'div',
-              props: {
-                style: { fontSize: '26px', fontWeight: 600, color: APAGADO, letterSpacing: '0.08em', textTransform: 'uppercase' },
-                children: categoria,
-              },
-            },
-          ],
-        },
-      },
-      ...(contador
-        ? [{ type: 'div', props: { style: { fontSize: '26px', fontWeight: 600, color: TENUE }, children: contador } }]
-        : []),
-    ],
-  },
-});
-
-const pie = (derecha: string) => ({
-  type: 'div',
-  props: {
-    style: {
-      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-      borderTop: `1px solid ${BORDE}`, paddingTop: '30px', height: '120px',
-    },
-    children: [
-      {
-        type: 'div',
-        props: {
-          style: { display: 'flex', alignItems: 'center', gap: '18px' },
-          children: [
-            { type: 'img', props: { src: FOTO, width: 56, height: 56, style: { borderRadius: '99px' } } },
-            { type: 'div', props: { style: { fontSize: '28px', fontWeight: 600, color: TEXTO }, children: AUTOR } },
-          ],
-        },
-      },
-      { type: 'div', props: { style: { fontSize: '26px', fontWeight: 600, color: ACENTO }, children: derecha } },
-    ],
-  },
-});
-
-/** El título de portada se achica por tramos, para que siempre quepa. */
-function tamanoTitulo(titulo: string): number {
-  if (titulo.length <= 40) return 92;
-  if (titulo.length <= 70) return 76;
-  if (titulo.length <= 110) return 62;
-  return 52;
-}
-
-function dibujarBloque(bloque: Bloque, color: string) {
-  if (bloque.tipo === 'titulo') {
-    return {
-      type: 'div',
-      props: {
-        style: { fontSize: '46px', fontWeight: 700, color: TEXTO, lineHeight: 1.25, letterSpacing: '-0.02em', marginTop: '16px' },
-        children: bloque.texto,
-      },
-    };
-  }
-  if (bloque.tipo === 'cita') {
-    return {
-      type: 'div',
-      props: {
-        style: {
-          display: 'flex', fontSize: `${CUERPO - 2}px`, color: APAGADO, lineHeight: INTERLINEA,
-          borderLeft: `5px solid ${color}`, paddingLeft: '24px',
-        },
-        children: bloque.texto,
-      },
-    };
-  }
-  if (bloque.tipo === 'lista') {
-    return {
-      type: 'div',
-      props: {
-        style: { display: 'flex', gap: '16px', fontSize: `${CUERPO}px`, color: TEXTO, lineHeight: INTERLINEA },
-        children: [
-          { type: 'div', props: { style: { color, fontWeight: 700 }, children: '·' } },
-          { type: 'div', props: { style: { display: 'flex' }, children: bloque.texto } },
-        ],
-      },
-    };
-  }
-  return {
-    type: 'div',
-    props: {
-      style: { fontSize: `${CUERPO}px`, color: TEXTO, lineHeight: INTERLINEA },
-      children: bloque.texto,
-    },
-  };
-}
 
 async function aPng(maqueta: any): Promise<Buffer> {
   const svg = await satori(maqueta, { width: ANCHO, height: ALTO, fonts: FUENTES });
@@ -379,78 +256,17 @@ export async function generarLamina(
   carrusel: Carrusel,
   numero: number,
 ): Promise<Buffer> {
-  const color = categoryColor(datos.categoria);
-  const fecha = datos.fecha.toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' });
+  const tema = temaDe(datos.categoria);
+  const lamina = {
+    titulo: datos.titulo,
+    categoria: datos.categoria,
+    fecha: datos.fecha.toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' }),
+    enlace: datos.enlace.replace(/^https?:\/\//, ''),
+    numero,
+    total: carrusel.total,
+  };
 
-  // ── Portada ──
-  if (numero === 1) {
-    return aPng(marco(color, [
-      cabecera(datos.categoria, color),
-      {
-        type: 'div',
-        props: {
-          style: { display: 'flex', flexDirection: 'column', justifyContent: 'center', flexGrow: 1, gap: '32px' },
-          children: [
-            {
-              type: 'div',
-              props: {
-                style: { fontSize: `${tamanoTitulo(datos.titulo)}px`, fontWeight: 700, color: TEXTO, lineHeight: 1.1, letterSpacing: '-0.03em' },
-                children: datos.titulo,
-              },
-            },
-            { type: 'div', props: { style: { fontSize: '28px', color: TENUE }, children: fecha } },
-          ],
-        },
-      },
-      pie('Desliza →'),
-    ]));
-  }
-
-  // ── Cierre ──
-  if (numero === carrusel.total) {
-    return aPng(marco(color, [
-      cabecera(datos.categoria, color),
-      {
-        type: 'div',
-        props: {
-          style: { display: 'flex', flexDirection: 'column', justifyContent: 'center', flexGrow: 1, gap: '28px' },
-          children: [
-            { type: 'div', props: { style: { fontSize: '40px', color: APAGADO }, children: 'Sigue leyendo el artículo completo en' } },
-            {
-              type: 'div',
-              props: {
-                style: { fontSize: '46px', fontWeight: 700, color: TEXTO, lineHeight: 1.3, letterSpacing: '-0.02em' },
-                children: datos.enlace.replace(/^https?:\/\//, ''),
-              },
-            },
-            {
-              type: 'div',
-              props: {
-                style: {
-                  display: 'flex', marginTop: '16px', padding: '28px 32px', borderRadius: '16px',
-                  backgroundColor: FONDO_SUAVE, fontSize: '32px', color: APAGADO, lineHeight: 1.4,
-                },
-                children: datos.titulo,
-              },
-            },
-          ],
-        },
-      },
-      pie(DOMINIO),
-    ]));
-  }
-
-  // ── Contenido ──
-  const bloques = carrusel.contenido[numero - 2] ?? [];
-  return aPng(marco(color, [
-    cabecera(datos.categoria, color, `${numero - 1}/${carrusel.total - 2}`),
-    {
-      type: 'div',
-      props: {
-        style: { display: 'flex', flexDirection: 'column', flexGrow: 1, justifyContent: 'center', gap: '22px' },
-        children: bloques.map((b) => dibujarBloque(b, color)),
-      },
-    },
-    pie(DOMINIO),
-  ]));
+  if (numero === 1) return aPng(tema.portada(lamina));
+  if (numero === carrusel.total) return aPng(tema.cierre(lamina));
+  return aPng(tema.contenido(lamina, carrusel.contenido[numero - 2] ?? []));
 }

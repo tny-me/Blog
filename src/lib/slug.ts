@@ -8,9 +8,14 @@ export function slugify(input: string): string {
     .replace(/^-+|-+$/g, '');
 }
 
-/** Color estable a partir del nombre de la categoría, para su punto de color. */
-export function categoryColor(name: string): string {
+/** Tono estable a partir del nombre de la categoría, del que sale todo su color. */
+export function categoryHue(name: string): number {
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = (hash * 31 + name.charCodeAt(i)) | 0;
-  return `hsl(${Math.abs(hash) % 360} 62% 55%)`;
+  return Math.abs(hash) % 360;
+}
+
+/** Color estable a partir del nombre de la categoría, para su punto de color. */
+export function categoryColor(name: string): string {
+  return `hsl(${categoryHue(name)} 62% 55%)`;
 }

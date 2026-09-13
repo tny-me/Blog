@@ -6,7 +6,7 @@ import { prepararCarrusel, generarLamina } from '../../../lib/carrusel';
 export async function getStaticPaths() {
   const posts = await getCollection('posts', ({ data }) => !data.draft);
   return posts.flatMap((post) => {
-    const carrusel = prepararCarrusel(post.body);
+    const carrusel = prepararCarrusel(post.body, post.data.category);
     return Array.from({ length: carrusel.total }, (_, i) => ({
       params: { imagen: `${post.slug}-${i + 1}` },
       props: { post, carrusel, numero: i + 1 },
