@@ -36,6 +36,7 @@ const today = new Date().toISOString().slice(0, 10);
       <span class="reader-acts">
         <button class="btn" id="ed-new" type="button">Nueva</button>
         <button class="btn" id="ed-diagramas" type="button">Diagramas</button>
+        <button class="btn" id="ed-redes" type="button" title="Imágenes para redes sociales">Redes</button>
         <button class="btn" id="ed-list" type="button">Mis entradas</button>
         <button class="btn" id="ed-key" type="button">Acceso</button>
         <button class="btn btn-primary" id="ed-publish" type="button">Publicar</button>
@@ -78,8 +79,9 @@ const today = new Date().toISOString().slice(0, 10);
       <p class="eyebrow">Entradas publicadas</p>
       <p class="ed-note">
         Se leen directamente del repositorio. <strong>Editar</strong> carga la entrada
-        aquí para modificarla; al publicar se sobrescribe. <strong>Eliminar</strong>
-        la borra del sitio y no se puede deshacer desde aquí.
+        aquí para modificarla; al publicar se sobrescribe. <strong>Redes</strong> abre
+        el carrusel de imágenes de esa entrada, listo para descargar.
+        <strong>Eliminar</strong> la borra del sitio y no se puede deshacer desde aquí.
       </p>
       <div id="ed-posts"></div>
     </div>
@@ -169,6 +171,15 @@ const today = new Date().toISOString().slice(0, 10);
     padding: 0.65rem 1.25rem;
     background: var(--bg);
     border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+  /* En el telefono los botones se reparten en varias lineas en lugar de
+     empujar «Publicar» fuera de la pantalla. */
+  .ed-bar .reader-acts {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    flex-shrink: 1;
+    min-width: 0;
   }
 
   .ed-panel {
@@ -1062,6 +1073,17 @@ const today = new Date().toISOString().slice(0, 10);
     if (!els.listPanel.hidden) cargarEntradas();
   });
 
+  // El carrusel se dibuja a partir de la entrada ya publicada, no del borrador
+  // que hay en pantalla: por eso hace falta haberla guardado antes.
+  $('ed-redes').addEventListener('click', () => {
+    const titulo = els.titulo.value.trim();
+    if (!titulo) return toast('Ponle un título y publica la entrada: las imágenes se hacen con lo publicado.');
+    if (editingPath === null) {
+      return toast('Publica la entrada primero. Las imágenes para redes se generan al publicarse el sitio.', 8000);
+    }
+    window.open(`/redes/${slugify(titulo)}/`, '_blank', 'noopener');
+  });
+
   $('ed-new').addEventListener('click', () => {
     if (els.titulo.value.trim() && !window.confirm('Se descartará lo que tienes en pantalla. ¿Seguir?')) return;
     nuevaEntrada();
@@ -1097,9 +1119,12 @@ const today = new Date().toISOString().slice(0, 10);
       els.state.textContent = editando ? 'Actualizada' : 'Publicado';
       toast(
         url
-          ? `Entrada guardada.${renombrada ? ' Cambió el título, así que su dirección también.' : ''} En un minuto estará en <a href="${url}" target="_blank" rel="noopener">${url}</a>`
+          ? `Entrada guardada.${renombrada ? ' Cambió el título, así que su dirección también.' : ''} ` +
+            `En un par de minutos estará en <a href="${url}" target="_blank" rel="noopener">${url}</a>, ` +
+            `y sus <a href="/redes/${slug}/" target="_blank" rel="noopener">imágenes para redes</a> ` +
+            `se generan a la vez.`
           : 'Entrada guardada como borrador: no aparecerá en el sitio hasta que desmarques «Borrador».',
-        12000
+        15000
       );
     } catch (err) {
       toast(`No se pudo publicar: ${(err as Error).message}`, 10000);

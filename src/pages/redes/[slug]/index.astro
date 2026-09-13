@@ -34,6 +34,10 @@ const omitidos = [
   imagenes && `${imagenes} ${imagenes === 1 ? 'imagen' : 'imágenes'}`,
   videos && `${videos} ${videos === 1 ? 'vídeo' : 'vídeos'}`,
 ].filter(Boolean) as string[];
+const unSoloOmitido = tablas + diagramas + imagenes + videos === 1;
+const avisoOmitidos = omitidos.length === 0 ? null
+  : `No se ${unSoloOmitido ? 'incluye' : 'incluyen'} ${omitidos.join(', ')}: ` +
+    `un carrusel de texto no ${unSoloOmitido ? 'lo' : 'los'} representa bien.`;
 
 // Pie listo para pegar en la publicación.
 const etiquetas = (post.data.tags ?? []).map((t: string) => '#' + t.replace(/[^\p{L}\p{N}]/gu, '')).join(' ');
@@ -87,10 +91,18 @@ const pieSugerido = [
         carrusel, así que se usaron las 20 y quedaron fuera {carrusel.recortados} bloques
         de texto — que es justo para lo que sirve la última lámina con el enlace.</>
       )}
-      {omitidos.length > 0 && (
-        <> No se incluyen {omitidos.join(', ')}: un carrusel de texto no los representa bien.</>
-      )}
+      {avisoOmitidos && <>{' '}{avisoOmitidos}</>}
     </p>
+
+    <!-- Si el sitio aún no ha terminado de publicarse, las láminas no existen todavía. -->
+    <div class="redes-aviso" id="redes-aviso" hidden>
+      <p>
+        <strong id="redes-aviso-texto"></strong>
+        Las láminas se generan al publicar el sitio, y eso tarda un par de minutos
+        desde que guardas la entrada.
+      </p>
+      <button class="btn btn-primary" id="redes-reintentar" type="button">Reintentar</button>
+    </div>
 
     <section class="redes-pie">
       <p class="eyebrow">Texto para la publicación</p>
@@ -100,8 +112,9 @@ const pieSugerido = [
 
     <div class="redes-rejilla">
       {laminas.map((lamina) => (
-        <figure class="redes-lamina">
+        <figure class="redes-lamina" data-nombre={`${post.slug}-${lamina.n}.png`}>
           <img src={lamina.src} alt={`Lámina ${lamina.n}`} loading="lazy" width="1080" height="1350" />
+          <div class="redes-hueco">Todavía no publicada</div>
           <figcaption>
             <span>{lamina.n}. {lamina.papel}</span>
             <a class="btn" href={lamina.src} download={`${post.slug}-${lamina.n}.png`}>Descargar</a>
@@ -115,6 +128,25 @@ const pieSugerido = [
 <style is:global>
   .redes { padding: 1.5rem 1.75rem 5rem; max-width: 1200px; margin: 0 auto; }
   .redes > .ed-note { max-width: 80ch; margin-bottom: 1.5rem; }
+
+  .redes-aviso {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    border: 1px solid var(--border);
+    border-left: 3px solid #D9730D;
+    border-radius: 8px;
+    padding: 0.9rem 1.1rem;
+    margin-bottom: 1.5rem;
+    background: var(--rail);
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: var(--muted);
+  }
+  .redes-aviso p { margin: 0; max-width: 70ch; }
+  .redes-aviso strong { color: var(--text); }
 
   .redes-pie {
     border: 1px solid var(--border);
@@ -155,6 +187,21 @@ const pieSugerido = [
     color: var(--muted);
   }
 
+  /* Marca de hueco: en lugar del icono de imagen rota del navegador. */
+  .redes-hueco {
+    display: none;
+    aspect-ratio: 1080 / 1350;
+    place-items: center;
+    text-align: center;
+    padding: 1rem;
+    font-size: 0.8125rem;
+    color: var(--faint);
+    background: var(--rail);
+    border-bottom: 1px solid var(--border);
+  }
+  .redes-lamina[data-estado='falta'] img { display: none; }
+  .redes-lamina[data-estado='falta'] .redes-hueco { display: grid; }
+
   @media (max-width: 700px) {
     .redes { padding: 1rem 1rem 4rem; }
   }
@@ -173,13 +220,108 @@ const pieSugerido = [
     }
   });
 
-  // Descargar todas: se disparan una a una, porque el navegador ignora las
-  // descargas simultáneas si llegan de golpe.
-  document.getElementById('bajar-todas')?.addEventListener('click', async () => {
-    const enlaces = [...document.querySelectorAll<HTMLAnchorElement>('.redes-lamina a[download]')];
-    for (const enlace of enlaces) {
-      enlace.click();
+  const laminas = [...document.querySelectorAll<HTMLElement>('.redes-lamina')];
+  const aviso = document.getElementById('redes-aviso') as HTMLElement | null;
+  const avisoTexto = document.getElementById('redes-aviso-texto');
+  const bajarTodas = document.getElementById('bajar-todas') as HTMLButtonElement | null;
+
+  // Una lamina que no carga casi siempre significa que el despliegue aun no
+  // termino: se dice con todas sus letras en vez de dejar el icono roto.
+  function revisar() {
+    const faltan = laminas.filter((l) => l.dataset.estado === 'falta').length;
+    if (!aviso || !avisoTexto) return;
+    aviso.hidden = faltan === 0;
+    avisoTexto.textContent = faltan === laminas.length
+      ? 'Las láminas todavía no están disponibles.'
+      : `Faltan ${faltan} de ${laminas.length} láminas.`;
+  }
+
+  for (const lamina of laminas) {
+    const img = lamina.querySelector('img') as HTMLImageElement;
+    img.addEventListener('error', () => { lamina.dataset.estado = 'falta'; revisar(); });
+    img.addEventListener('load', () => { delete lamina.dataset.estado; revisar(); });
+    if (img.complete && img.naturalWidth === 0) { lamina.dataset.estado = 'falta'; revisar(); }
+  }
+
+  document.getElementById('redes-reintentar')?.addEventListener('click', () => {
+    const sello = Date.now();
+    for (const lamina of laminas) {
+      const img = lamina.querySelector('img') as HTMLImageElement;
+      img.src = img.src.split('?')[0] + '?v=' + sello;
+    }
+  });
+
+  async function archivoDe(lamina: HTMLElement): Promise<File> {
+    const img = lamina.querySelector('img') as HTMLImageElement;
+    const nombre = lamina.dataset.nombre ?? 'lamina.png';
+    const res = await fetch(img.src.split('?')[0], { cache: 'no-store' });
+    if (!res.ok) throw new Error(`la lámina aún no está publicada (${res.status})`);
+    return new File([await res.blob()], nombre, { type: 'image/png' });
+  }
+
+  // En el móvil el atributo download se ignora, así que primero se ofrece la
+  // hoja de compartir —que trae «Guardar imagen»— y sólo si no la hay se baja.
+  async function guardar(archivos: File[]) {
+    if (archivos.length && navigator.canShare?.({ files: archivos })) {
+      try {
+        await navigator.share({ files: archivos });
+        return;
+      } catch (err) {
+        if ((err as Error).name === 'AbortError') return;
+      }
+    }
+    for (const archivo of archivos) {
+      const url = URL.createObjectURL(archivo);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = archivo.name;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 10000);
       await new Promise((listo) => setTimeout(listo, 350));
+    }
+  }
+
+  for (const lamina of laminas) {
+    const boton = lamina.querySelector('a[download]') as HTMLAnchorElement;
+    boton.addEventListener('click', async (ev) => {
+      ev.preventDefault();
+      const antes = boton.textContent;
+      boton.textContent = '…';
+      try {
+        await guardar([await archivoDe(lamina)]);
+        boton.textContent = antes;
+      } catch (err) {
+        lamina.dataset.estado = 'falta';
+        revisar();
+        boton.textContent = antes;
+      }
+    });
+  }
+
+  bajarTodas?.addEventListener('click', async () => {
+    bajarTodas.disabled = true;
+    const antes = bajarTodas.textContent;
+    try {
+      const archivos: File[] = [];
+      for (let i = 0; i < laminas.length; i++) {
+        bajarTodas.textContent = `Preparando ${i + 1}/${laminas.length}…`;
+        archivos.push(await archivoDe(laminas[i]));
+      }
+      bajarTodas.textContent = 'Guardando…';
+      await guardar(archivos);
+      bajarTodas.textContent = antes;
+    } catch (err) {
+      bajarTodas.textContent = 'No están listas todavía';
+      for (const lamina of laminas) {
+        const img = lamina.querySelector('img') as HTMLImageElement;
+        if (!img.complete || img.naturalWidth === 0) lamina.dataset.estado = 'falta';
+      }
+      revisar();
+      setTimeout(() => { bajarTodas.textContent = antes; }, 4000);
+    } finally {
+      bajarTodas.disabled = false;
     }
   });
 </script>
