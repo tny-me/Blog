@@ -1,7 +1,7 @@
 import satori from 'satori';
 import { Resvg } from '@resvg/resvg-js';
-import { readFileSync } from 'node:fs';
 import { categoryColor } from './slug';
+import { FUENTES, FOTO, TEXTO, APAGADO, BORDE, ACENTO } from './marca';
 
 /**
  * Tarjeta de vista previa para cuando se comparte el enlace de una entrada.
@@ -11,24 +11,6 @@ import { categoryColor } from './slug';
  * que el sistema tenga la tipografía instalada— y resvg lo pasa a PNG.
  */
 
-// Al compilar, este modulo se ejecuta desde la carpeta de salida, asi que las
-// rutas se resuelven desde la raiz del proyecto y no desde el propio archivo.
-const leer = (ruta: string) => readFileSync(new URL(ruta, `file://${process.cwd()}/`));
-
-const FUENTES = [
-  { name: 'Inter', data: leer('src/assets/fuentes/Inter-Regular.ttf'), weight: 400 as const, style: 'normal' as const },
-  { name: 'Inter', data: leer('src/assets/fuentes/Inter-SemiBold.ttf'), weight: 600 as const, style: 'normal' as const },
-  { name: 'Inter', data: leer('src/assets/fuentes/Inter-Bold.ttf'), weight: 700 as const, style: 'normal' as const },
-];
-
-const FOTO =
-  'data:image/jpeg;base64,' +
-  leer('public/assets/img/ia/photo_perfil_antonio.jpeg').toString('base64');
-
-const TEXTO = '#37352F';
-const APAGADO = '#787774';
-const BORDE = '#E9E9E7';
-const ACENTO = '#D9730D';
 
 /** El título manda: cuanto más largo, más pequeño, para que siempre quepa. */
 function tamanoTitulo(titulo: string): number {

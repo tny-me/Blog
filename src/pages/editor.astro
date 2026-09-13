@@ -896,6 +896,14 @@ const today = new Date().toISOString().slice(0, 10);
       ver.rel = 'noopener';
       ver.href = `/posts/${entrada.name.replace(/\.md$/, '')}`;
 
+      const redes = document.createElement('a');
+      redes.className = 'btn';
+      redes.textContent = 'Redes';
+      redes.title = 'Carrusel de imágenes para redes sociales';
+      redes.target = '_blank';
+      redes.rel = 'noopener';
+      redes.href = `/redes/${entrada.name.replace(/\.md$/, '')}/`;
+
       const editar = document.createElement('button');
       editar.className = 'btn';
       editar.type = 'button';
@@ -908,7 +916,7 @@ const today = new Date().toISOString().slice(0, 10);
       borrar.textContent = 'Eliminar';
       borrar.addEventListener('click', () => borrarEntrada(entrada.path, titulo.textContent ?? ''));
 
-      acts.append(ver, editar, borrar);
+      acts.append(ver, redes, editar, borrar);
       fila.append(main, acts);
       els.posts.appendChild(fila);
     }

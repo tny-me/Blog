@@ -1,0 +1,186 @@
+---
+import '../../../styles/global.css';
+import { getCollection } from 'astro:content';
+import { prepararCarrusel } from '../../../lib/carrusel';
+import { resumenDe } from '../../../lib/resumen';
+import { categoryColor } from '../../../lib/slug';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts', ({ data }) => !data.draft);
+  return posts.map((post) => ({ params: { slug: post.slug }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+
+const carrusel = prepararCarrusel(post.body);
+const enlace = new URL(`${base}posts/${post.slug}/`, Astro.site).href;
+const color = categoryColor(post.data.category);
+
+const laminas = Array.from({ length: carrusel.total }, (_, i) => {
+  const n = i + 1;
+  return {
+    n,
+    src: `${base}redes/img/${post.slug}-${n}.png`,
+    papel: n === 1 ? 'Portada' : n === carrusel.total ? 'Cierre' : `Contenido ${n - 1}`,
+  };
+});
+
+// Aviso de lo que no cabe en un carrusel de texto.
+const { tablas, diagramas, imagenes, videos } = carrusel.omitidos;
+const omitidos = [
+  tablas && `${tablas} ${tablas === 1 ? 'tabla' : 'tablas'}`,
+  diagramas && `${diagramas} ${diagramas === 1 ? 'diagrama' : 'diagramas'}`,
+  imagenes && `${imagenes} ${imagenes === 1 ? 'imagen' : 'imágenes'}`,
+  videos && `${videos} ${videos === 1 ? 'vídeo' : 'vídeos'}`,
+].filter(Boolean) as string[];
+
+// Pie listo para pegar en la publicación.
+const etiquetas = (post.data.tags ?? []).map((t: string) => '#' + t.replace(/[^\p{L}\p{N}]/gu, '')).join(' ');
+const pieSugerido = [
+  post.data.title,
+  '',
+  resumenDe(post.body, post.data.description, 180),
+  '',
+  `Artículo completo: ${enlace}`,
+  etiquetas,
+].filter((l) => l !== undefined).join('\n').trim();
+---
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Carrusel — {post.data.title}</title>
+  <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <script is:inline>
+    const t = localStorage.getItem('theme') ??
+      (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    document.documentElement.setAttribute('data-theme', t);
+  </script>
+</head>
+
+<body>
+  <header class="ed-bar">
+    <span class="reader-crumb">
+      <a href={`${base}editor`} class="btn">←</a>
+      <span class="rail-swatch" style={`background:${color}`}></span>
+      <span>{post.data.title}</span>
+      <span class="pill">{carrusel.total} láminas</span>
+    </span>
+    <span class="reader-acts">
+      <a class="btn" href={`${base}posts/${post.slug}/`} target="_blank" rel="noopener">Ver entrada</a>
+      <button class="btn btn-primary" id="bajar-todas" type="button">Descargar todas</button>
+    </span>
+  </header>
+
+  <main class="redes">
+    <p class="ed-note">
+      Láminas de 1080×1350, la proporción que Instagram y LinkedIn muestran sin recortar.
+      La última lleva el enlace al artículo.
+      {carrusel.recortados > 0 && (
+        <> Este artículo no cabe entero: Instagram y LinkedIn admiten 20 imágenes por
+        carrusel, así que se usaron las 20 y quedaron fuera {carrusel.recortados} bloques
+        de texto — que es justo para lo que sirve la última lámina con el enlace.</>
+      )}
+      {omitidos.length > 0 && (
+        <> No se incluyen {omitidos.join(', ')}: un carrusel de texto no los representa bien.</>
+      )}
+    </p>
+
+    <section class="redes-pie">
+      <p class="eyebrow">Texto para la publicación</p>
+      <pre id="pie-texto">{pieSugerido}</pre>
+      <button class="btn" id="copiar-pie" type="button">Copiar texto</button>
+    </section>
+
+    <div class="redes-rejilla">
+      {laminas.map((lamina) => (
+        <figure class="redes-lamina">
+          <img src={lamina.src} alt={`Lámina ${lamina.n}`} loading="lazy" width="1080" height="1350" />
+          <figcaption>
+            <span>{lamina.n}. {lamina.papel}</span>
+            <a class="btn" href={lamina.src} download={`${post.slug}-${lamina.n}.png`}>Descargar</a>
+          </figcaption>
+        </figure>
+      ))}
+    </div>
+  </main>
+</body>
+
+<style is:global>
+  .redes { padding: 1.5rem 1.75rem 5rem; max-width: 1200px; margin: 0 auto; }
+  .redes > .ed-note { max-width: 80ch; margin-bottom: 1.5rem; }
+
+  .redes-pie {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem 1.1rem;
+    margin-bottom: 2rem;
+    background: var(--rail);
+  }
+  .redes-pie .eyebrow { display: block; margin-bottom: 0.6rem; }
+  .redes-pie pre {
+    white-space: pre-wrap;
+    font-family: inherit;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: var(--text);
+    margin-bottom: 0.75rem;
+  }
+
+  .redes-rejilla {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1.25rem;
+  }
+  .redes-lamina {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--bg);
+  }
+  .redes-lamina img { width: 100%; height: auto; display: block; border-bottom: 1px solid var(--border); }
+  .redes-lamina figcaption {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.5rem 0.6rem;
+    font-size: 0.8125rem;
+    color: var(--muted);
+  }
+
+  @media (max-width: 700px) {
+    .redes { padding: 1rem 1rem 4rem; }
+  }
+</style>
+
+<script>
+  const copiar = document.getElementById('copiar-pie');
+  copiar?.addEventListener('click', async () => {
+    const texto = document.getElementById('pie-texto')?.textContent ?? '';
+    try {
+      await navigator.clipboard.writeText(texto);
+      copiar.textContent = 'Copiado ✓';
+      setTimeout(() => { copiar.textContent = 'Copiar texto'; }, 2000);
+    } catch {
+      copiar.textContent = 'Selecciónalo y copia a mano';
+    }
+  });
+
+  // Descargar todas: se disparan una a una, porque el navegador ignora las
+  // descargas simultáneas si llegan de golpe.
+  document.getElementById('bajar-todas')?.addEventListener('click', async () => {
+    const enlaces = [...document.querySelectorAll<HTMLAnchorElement>('.redes-lamina a[download]')];
+    for (const enlace of enlaces) {
+      enlace.click();
+      await new Promise((listo) => setTimeout(listo, 350));
+    }
+  });
+</script>
+</html>
