@@ -13,7 +13,7 @@ export async function getStaticPaths() {
 const { post } = Astro.props;
 const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 
-const carrusel = prepararCarrusel(post.body);
+const carrusel = prepararCarrusel(post.body, post.data.category);
 const enlace = new URL(`${base}posts/${post.slug}/`, Astro.site).href;
 const color = categoryColor(post.data.category);
 
@@ -75,6 +75,7 @@ const pieSugerido = [
       <span class="rail-swatch" style={`background:${color}`}></span>
       <span>{post.data.title}</span>
       <span class="pill">{carrusel.total} láminas</span>
+      <span class="pill">Estilo {carrusel.tema}</span>
     </span>
     <span class="reader-acts">
       <a class="btn" href={`${base}posts/${post.slug}/`} target="_blank" rel="noopener">Ver entrada</a>
