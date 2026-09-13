@@ -469,9 +469,82 @@ function temaInvertido(categoria: string): Tema {
   };
 }
 
+// ═══════════════════════════════════════════════════════════════
+// 5 · BANDAS — franjas de color arriba y abajo enmarcando el texto
+// ═══════════════════════════════════════════════════════════════
+function temaBandas(categoria: string): Tema {
+  const c = paletaDe(categoria);
+  const ALTA = 104;
+  const BAJA = 128;
+  const m: Metricas = { cuerpo: 42, interlinea: 1.55, margen: 88, cabecera: ALTA, pie: BAJA };
+
+  const franjaAlta = (derecha?: string) => div({
+    alignItems: 'center', justifyContent: 'space-between', height: `${ALTA}px`,
+    backgroundColor: c.solido, padding: `0 ${m.margen}px`,
+  }, [
+    rotulo(categoria, 'rgba(255,255,255,0.9)'),
+    ...(derecha ? [txt({ fontSize: '27px', fontWeight: 700, color: BLANCO }, derecha)] : []),
+  ]);
+
+  const franjaBaja = (derecha?: any) => div({
+    alignItems: 'center', justifyContent: 'space-between', height: `${BAJA}px`,
+    backgroundColor: c.solido, padding: `0 ${m.margen}px`,
+  }, [
+    div({ alignItems: 'center', gap: '18px' }, [
+      foto(54, 'rgba(255,255,255,0.9)'),
+      txt({ fontSize: '28px', fontWeight: 600, color: BLANCO }, AUTOR),
+    ]),
+    derecha ?? txt({ fontSize: '26px', fontWeight: 600, color: 'rgba(255,255,255,0.85)' }, DOMINIO),
+  ]);
+
+  const entre = (hijos: any[]) => div({
+    flexDirection: 'column', flexGrow: 1, justifyContent: 'center', padding: `${m.margen}px`,
+  }, hijos);
+
+  return {
+    nombre: 'Bandas',
+    metricas: m,
+
+    portada: (d) => laminaSangrada(BLANCO, [
+      franjaAlta(),
+      entre([
+        txt({
+          fontSize: `${tamanoTitulo(d.titulo, 90)}px`, fontWeight: 700, color: NEGRO,
+          lineHeight: 1.07, letterSpacing: '-0.035em',
+        }, d.titulo),
+        txt({ fontSize: '29px', color: APAGADO, marginTop: '32px' }, d.fecha),
+      ]),
+      franjaBaja(txt({ fontSize: '27px', fontWeight: 700, color: BLANCO }, 'Desliza →')),
+    ]),
+
+    contenido: (d, bloques) => laminaSangrada(BLANCO, [
+      franjaAlta(`${d.numero - 1}/${d.total - 2}`),
+      div({ flexDirection: 'column', flexGrow: 1, padding: `${m.margen}px` }, [
+        cuerpo(bloques, m, c.vivo, false),
+      ]),
+      franjaBaja(),
+    ]),
+
+    cierre: (d) => laminaSangrada(BLANCO, [
+      franjaAlta(),
+      entre([
+        txt({ fontSize: '56px', fontWeight: 700, color: NEGRO, lineHeight: 1.15, letterSpacing: '-0.03em' }, 'Sigue leyendo'),
+        div({
+          flexDirection: 'column', marginTop: '36px', padding: '34px 36px',
+          borderRadius: '18px', backgroundColor: c.tenue, borderLeft: `6px solid ${c.solido}`,
+        }, [
+          txt({ fontSize: '36px', fontWeight: 700, color: c.solido, lineHeight: 1.35 }, d.enlace),
+        ]),
+        txt({ fontSize: '30px', color: APAGADO, lineHeight: 1.45, marginTop: '28px' }, d.titulo),
+      ]),
+      franjaBaja(),
+    ]),
+  };
+}
+
 // ── Reparto de temas ────────────────────────────────────────────
 
-const CONSTRUCTORES = [temaPleno, temaMitad, temaMarco, temaInvertido];
+const CONSTRUCTORES = [temaPleno, temaMitad, temaMarco, temaInvertido, temaBandas];
 
 /**
  * Qué silueta y qué color le toca a cada categoría.
@@ -487,6 +560,7 @@ const POR_CATEGORIA: Record<string, { tema: number; tono: number }> = {
   'ciencia de datos': { tema: 1, tono: 206 },   // azul
   'producto': { tema: 2, tono: 282 },           // morado
   'personal': { tema: 3, tono: 152 },           // verde
+  'ia': { tema: 4, tono: 84 },                  // oliva
 };
 
 const asignado = (categoria: string) => POR_CATEGORIA[categoria.trim().toLowerCase()];
