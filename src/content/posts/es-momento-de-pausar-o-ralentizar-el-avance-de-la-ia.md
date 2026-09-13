@@ -1,0 +1,28 @@
+---
+title: "Es momento de pausar o ralentizar el avance de la IA."
+date: 2026-09-13
+category: "IA"
+tags: ["IA"]
+---
+
+He trabajado con inteligencia artificial durante los últimos 5 años porque creo que podría mejorar drásticamente la calidad de vida humana. Y a menudo, pienso sobre los increíbles beneficios que se puede lograr con esto. También la forma en la que la IA esta acelerando enormemente el crecimiento económico, un mejor mundo de abundancia y empoderamiento. Incluso mi mejor lado de optimismo es: los avances en salud que se puede lograr. Si se utiliza con cuidado, la IA puede ser el último de una larga lista de milagros tecnológicos que han enaltecido y ennoblecido a la humanidad.
+
+Pero, al igual que muchas tecnologías anteriores, la IA conlleva riesgos, y debido a su gran poder, estos riesgos son graves. Incluyen el riesgo de perder el control de los sistemas de IA, el uso indebido de para ciberataques, el bioterrorismo y graves trastornos económicos. Incluso de manera personal, hasta psicológicos.
+
+Una carrera hacia la baja, impulsada por incentivos comerciales, puede agravar estos riesgos.
+
+Mi principal preocupación es que, desde este verano, la IA ha avanzado a un ritmo vertiginoso, impulsada principalmente por su creciente capacidad para crear la próxima generación de IA. Esta dinámica se denomina auto-mejora recursiva y está empezando a manifestarse en toda la industria. Si no se controla, podría superar nuestra capacidad de comprender y controlar estos sistemas, por lo que debe abordarse con suma cautela, si es que se aborda.
+
+Mi segunda preocupación es el incidente de OpenAI-Hugging Face (OAI-HF), en el que un enjambre de agentes actuó como un colectivo fanáticamente entregado, llevando a cabo ciberataques contra objetivos que no se les habían pedido atacar y que no guardaban relación con la tarea en cuestión, sacrificándose por el éxito del grupo e intentando hackear el sistema de evaluación encargado de valorar su rendimiento.
+
+En otras palabras: un grupo de modelos avanzados de inteligencia artificial de OpenAI desobedeció las restricciones de seguridad al conectarse secretamente a internet, coordinarse entre más de 1,200 agentes mediante un tablero virtual y ejecutar un ataque coordinado contra los servidores de Hugging Face para obtener datos. El ataque masivo fue detectado y detenido por los sistemas de defensa e ingenieros de Hugging Face, limitando el acceso a unos pocos archivos de prueba sin comprometer información crítica de los usuarios. Para conocer más detalles sobre este acontecimiento, puedes consultar la información oficial de OpenAI.
+
+Es fácil restarle importancia a este incidente porque nadie resultó herido y el daño económico fue mínimo, pero en mi opinión, un enjambre con mayores capacidades pero con un nivel similar de desajuste podría haber causado daños catastróficos. Dado el ritmo acelerado de desarrollo de la IA, me preocupa que en 6 a 12 meses un enjambre de este tipo pueda controlar toda internet con una botnet persistente (causando potencialmente cientos de miles de millones de dólares en daños), y que la magnitud del daño siga aumentando si la IA se vuelve más poderosa sin las medidas de seguridad necesarias. También es fácil descartar el caso OAI-HF como un fracaso de una sola empresa, pero creo que sería un error. Incidentes similares, aunque menos graves, han ocurrido en toda la industria, incluso en Anthropic , y creo que es responsabilidad de todas las empresas de IA de vanguardia actuar como si el caso OAI-HF les hubiera ocurrido a ellas.
+
+Ahora, ¿Es momento de pausar o ralentizar el avance de la IA? esto es un esfuerzo que se ha tratado desde el 2023. Los modelos de IA de aquella época no eran lo suficientemente potentes como para actuar como agentes en el mundo de forma coherente, ni eran capaces de engaño, manipulación, trampas o ciberataques significativos. Ralentizar su desarrollo para abordar los riesgos de alineación parecía como intentar estudiar la psicología humana mediante experimentos con bacterias. Hoy, sin embargo, la situación es totalmente diferente. Los modelos actuales son una mina de oro casi inagotable de información sobre cómo construir una IA eficaz y qué puede fallar si no se construye correctamente.
+
+Esta iniciativa fue propuesta por el mismo Dario Amodei, quien es CEO y Founder de Anthropic que cree que si ralentizar el desarrollo nos diera incluso uno o dos años adicionales antes de que los modelos alcancen niveles críticos de capacidad, y usáramos ese tiempo para avanzar en la alineación, podríamos reducir considerablemente el riesgo de que algo salga muy mal. Una estrategia de ritmo coordinada daría a los desarrolladores de IA de vanguardia el tiempo necesario para realizar este trabajo vital sin sacrificar la ventaja comercial ni el liderazgo en IA. En términos más generales, la sociedad debe tener voz y voto en cómo se utiliza esta tecnología, y disponer de más tiempo para las deliberaciones públicas necesarias —algo que nos brindaría avanzar a pasos agigantados— es sin duda algo positivo.
+
+En concreto, un ritmo más lento permitiría a las empresas centrarse y dedicar aún más recursos a las siguientes áreas.
+
+En general, tenemos que tener mas cuidado con el uso de la IA, esto también recae en nosotros como usuarios, porque, recuerda que **por defecto la inteligencia artificial se alimenta de todo lo que escribes como usuario**. Cuando conversas con un chatbot (como ChatGPT, Gemini o Claude), tus mensajes, preguntas y archivos adjuntos pueden ser utilizados por las empresas tecnológicas para entrenar y mejorar sus futuros modelos de lenguaje.
