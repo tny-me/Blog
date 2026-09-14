@@ -1,5 +1,6 @@
 ---
 import Shell from './Shell.astro';
+import { FOTO_PERFIL } from '../lib/perfil';
 import { categoryColor, slugify } from '../lib/slug';
 
 interface Props {
@@ -58,7 +59,7 @@ const dateFormatted = date.toLocaleDateString('es-MX', {
           Autor
         </span>
         <span class="prop-val">
-          <span class="prop-person"><img class="rail-photo" style="width:20px;height:20px;" src={`${base}assets/img/ia/photo_perfil_antonio.jpeg`} alt="" /> Tonny</span>
+          <span class="prop-person"><img class="rail-photo" style="width:20px;height:20px;" src={`${base}${FOTO_PERFIL}`} alt="" /> Tonny</span>
         </span>
       </div>
 

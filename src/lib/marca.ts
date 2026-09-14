@@ -1,4 +1,5 @@
 import { readFileSync } from 'node:fs';
+import { FOTO_PERFIL } from './perfil';
 
 /**
  * Piezas de marca compartidas por todo lo que se dibuja como imagen: la tarjeta
@@ -17,7 +18,7 @@ export const FUENTES = [
 
 export const FOTO =
   'data:image/jpeg;base64,' +
-  leer('public/assets/img/ia/photo_perfil_antonio.jpeg').toString('base64');
+  leer(`public/${FOTO_PERFIL}`).toString('base64');
 
 export const TEXTO = '#37352F';
 export const APAGADO = '#787774';

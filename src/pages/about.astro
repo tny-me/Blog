@@ -1,12 +1,13 @@
 ---
 import Shell from '../layouts/Shell.astro';
+import { FOTO_PERFIL } from '../lib/perfil';
 
 const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 ---
 
 <Shell title="Acerca" description="Sobre Tonny" crumb="Acerca" view="reader">
   <article>
-    <img class="about-photo" src={`${base}assets/img/ia/photo_perfil_antonio.jpeg`} alt="Tonny" width="96" height="96" />
+    <img class="about-photo" src={`${base}${FOTO_PERFIL}`} alt="Tonny" width="96" height="96" />
 
     <h1 class="page-title">Sobre mí</h1>
 
@@ -15,7 +16,7 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
         <span class="prop-key">Autor</span>
         <span class="prop-val">
           <span class="prop-person">
-            <img class="rail-photo" style="width:20px;height:20px;" src={`${base}assets/img/ia/photo_perfil_antonio.jpeg`} alt="" />
+            <img class="rail-photo" style="width:20px;height:20px;" src={`${base}${FOTO_PERFIL}`} alt="" />
             Tonny
           </span>
         </span>

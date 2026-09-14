@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import { FOTO_PERFIL } from '../lib/perfil';
 import { getCollection } from 'astro:content';
 import { slugify, categoryColor } from '../lib/slug';
 
@@ -109,7 +110,7 @@ const fmt = (d: Date) =>
 <body>
   <div class="mobile-bar">
     <a href={base} class="rail-top" style="padding:0;">
-      <img class="rail-photo" src={`${base}assets/img/ia/photo_perfil_antonio.jpeg`} alt="" width="28" height="28" />
+      <img class="rail-photo" src={`${base}${FOTO_PERFIL}`} alt="" width="28" height="28" />
       <span class="rail-name">Tonny</span>
     </a>
     <nav>
@@ -122,7 +123,7 @@ const fmt = (d: Date) =>
     <!-- Panel 1 · navegación y categorías -->
     <aside class="rail">
       <a href={base} class="rail-top">
-        <img class="rail-photo" src={`${base}assets/img/ia/photo_perfil_antonio.jpeg`} alt="" width="28" height="28" />
+        <img class="rail-photo" src={`${base}${FOTO_PERFIL}`} alt="" width="28" height="28" />
         <span class="rail-name">Tonny</span>
       </a>
 
